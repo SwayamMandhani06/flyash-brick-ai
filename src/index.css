@@ -1,0 +1,405 @@
+/* ==========================================================================
+   FlyAsh Intel — Design Token System & Base Styles
+   Scientific Precision • Engineering Rigor • Sustainable Material Intelligence
+   ========================================================================== */
+
+:root {
+  /* Font Families */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Spacing Scale (8pt grid system) */
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* Border Radii - Architectural & Crisp */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Transitions & Timing */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --transition-fast: 150ms var(--ease-out-quint);
+  --transition-base: 240ms var(--ease-out-quint);
+  --transition-slow: 400ms var(--ease-out-quint);
+  --transition-theme: background-color 300ms ease, color 300ms ease, border-color 300ms ease, box-shadow 300ms ease;
+
+  /* Z-Index Hierarchy */
+  --z-negative: -1;
+  --z-elevate: 1;
+  --z-sticky: 100;
+  --z-drawer: 200;
+  --z-modal: 500;
+  --z-toast: 1000;
+}
+
+/* ==========================================================================
+   LIGHT THEME (Default) — Warm Off-White / Scientific Material Lab
+   ========================================================================== */
+:root[data-theme="light"] {
+  --color-scheme: light;
+
+  /* Backgrounds */
+  --bg-app: #F7F8F5;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-surface-subtle: #F0F2ED;
+  --bg-surface-translucent: rgba(255, 255, 255, 0.82);
+  --bg-overlay: rgba(15, 23, 42, 0.45);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(15, 23, 42, 0.07);
+  --border-medium: rgba(15, 23, 42, 0.14);
+  --border-strong: rgba(15, 23, 42, 0.28);
+  --border-accent: rgba(22, 101, 52, 0.35);
+
+  /* Typography */
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-tertiary: #64748B;
+  --text-muted: #94A3B8;
+  --text-inverse: #FFFFFF;
+
+  /* Primary Brand: Deep Forest / Emerald */
+  --accent-primary: #166534;
+  --accent-primary-hover: #14532D;
+  --accent-primary-light: #DCFCE7;
+  --accent-primary-subtle: rgba(22, 101, 52, 0.08);
+
+  /* Secondary Brand: Precision Technical Teal */
+  --accent-secondary: #0D9488;
+  --accent-secondary-hover: #0F766E;
+  --accent-secondary-light: #CCFBF1;
+  --accent-secondary-subtle: rgba(13, 148, 136, 0.08);
+
+  /* Warm Mineral Tone: Calcined Lime / Gypsum Amber */
+  --accent-mineral: #B45309;
+  --accent-mineral-hover: #92400E;
+  --accent-mineral-light: #FEF3C7;
+  --accent-mineral-subtle: rgba(180, 83, 9, 0.08);
+
+  /* Status Colors */
+  --status-success: #15803D;
+  --status-success-bg: #DCFCE7;
+  --status-warning: #B45309;
+  --status-warning-bg: #FEF3C7;
+  --status-danger: #BE123C;
+  --status-danger-bg: #FFE4E6;
+  --status-info: #0284C7;
+  --status-info-bg: #E0F2FE;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 40px -8px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+
+  /* Technical Grid Pattern */
+  --grid-line-color: rgba(15, 23, 42, 0.035);
+  --glow-subtle: rgba(22, 101, 52, 0.06);
+}
+
+/* ==========================================================================
+   DARK THEME — Research Intelligence Workstation / Deep Graphite
+   ========================================================================== */
+:root[data-theme="dark"] {
+  --color-scheme: dark;
+
+  /* Backgrounds */
+  --bg-app: #0A0E12;
+  --bg-surface: #12181F;
+  --bg-surface-elevated: #18222C;
+  --bg-surface-subtle: #1C2632;
+  --bg-surface-translucent: rgba(18, 24, 31, 0.82);
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Borders & Dividers */
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-medium: rgba(255, 255, 255, 0.13);
+  --border-strong: rgba(255, 255, 255, 0.24);
+  --border-accent: rgba(16, 185, 129, 0.35);
+
+  /* Typography */
+  --text-primary: #F3F4F6;
+  --text-secondary: #94A3B8;
+  --text-tertiary: #64748B;
+  --text-muted: #475569;
+  --text-inverse: #0A0E12;
+
+  /* Primary Brand: Crisp Emerald */
+  --accent-primary: #10B981;
+  --accent-primary-hover: #34D399;
+  --accent-primary-light: rgba(16, 185, 129, 0.15);
+  --accent-primary-subtle: rgba(16, 185, 129, 0.1);
+
+  /* Secondary Brand: Precision Cyan/Teal */
+  --accent-secondary: #14B8A6;
+  --accent-secondary-hover: #2DD4BF;
+  --accent-secondary-light: rgba(20, 184, 166, 0.15);
+  --accent-secondary-subtle: rgba(20, 184, 166, 0.1);
+
+  /* Warm Mineral Highlight: Calcined Amber */
+  --accent-mineral: #F59E0B;
+  --accent-mineral-hover: #FBBF24;
+  --accent-mineral-light: rgba(245, 158, 11, 0.15);
+  --accent-mineral-subtle: rgba(245, 158, 11, 0.1);
+
+  /* Status Colors */
+  --status-success: #34D399;
+  --status-success-bg: rgba(52, 211, 153, 0.12);
+  --status-warning: #FBBF24;
+  --status-warning-bg: rgba(251, 191, 36, 0.12);
+  --status-danger: #FB7185;
+  --status-danger-bg: rgba(251, 113, 133, 0.12);
+  --status-info: #38BDF8;
+  --status-info-bg: rgba(56, 189, 248, 0.12);
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.7);
+
+  /* Technical Grid Pattern */
+  --grid-line-color: rgba(255, 255, 255, 0.025);
+  --glow-subtle: rgba(16, 185, 129, 0.05);
+}
+
+/* ==========================================================================
+   CSS RESETS & GLOBAL BASE STYLES
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: var(--transition-theme);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Technical Grid Overlay */
+.technical-grid-bg {
+  background-image: 
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Selection Color */
+::selection {
+  background-color: var(--accent-primary-light);
+  color: var(--accent-primary);
+}
+
+/* Accessibility Focus States */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text-primary);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: clamp(2.25rem, 4vw + 1rem, 3.75rem); }
+h2 { font-size: clamp(1.75rem, 2.5vw + 0.5rem, 2.5rem); }
+h3 { font-size: clamp(1.25rem, 1.5vw + 0.25rem, 1.75rem); }
+h4 { font-size: 1.25rem; font-weight: 600; }
+h5 { font-size: 1.05rem; font-weight: 600; }
+h6 { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+  font-size: 0.95rem;
+}
+
+/* Monospace Numerical and Code Elements */
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+}
+
+/* Containers */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+.container-narrow {
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-6);
+  padding-right: var(--space-6);
+}
+
+/* Reusable Section Wrapper */
+.section {
+  padding-top: var(--space-20);
+  padding-bottom: var(--space-20);
+  position: relative;
+}
+
+/* Glassmorphism Panel Utility */
+.glass-panel {
+  background: var(--bg-surface-translucent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-base);
+}
+
+.glass-panel:hover {
+  border-color: var(--border-medium);
+}
+
+/* Scientific Badges & Tags */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  line-height: 1;
+}
+
+.badge-emerald {
+  background: var(--accent-primary-subtle);
+  color: var(--accent-primary);
+  border-color: var(--accent-primary-light);
+}
+
+.badge-teal {
+  background: var(--accent-secondary-subtle);
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary-light);
+}
+
+.badge-amber {
+  background: var(--accent-mineral-subtle);
+  color: var(--accent-mineral);
+  border-color: var(--accent-mineral-light);
+}
+
+.badge-subtle {
+  background: var(--bg-surface-subtle);
+  color: var(--text-secondary);
+  border-color: var(--border-subtle);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes scanLine {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s var(--ease-out-quint) forwards;
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 2.5s infinite ease-in-out;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-app);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
