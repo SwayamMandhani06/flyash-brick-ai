@@ -2,11 +2,10 @@ import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { MOCK_FLY_ASH_DATASET } from '../../data/mockDataset';
 import type { FlyAshMixRecord } from '../../types/dataset';
-import { SectionHeading } from '../common/SectionHeading';
-import { GlassPanel } from '../common/GlassPanel';
 import { Button } from '../common/Button';
 import { RecordDetailModal } from './RecordDetailModal';
-import { Search, ArrowUpDown, ExternalLink, Eye, Info } from 'lucide-react';
+import { ScatterPlotVisualizer } from './ScatterPlotVisualizer';
+import { Search, ArrowUpDown, ExternalLink, Eye } from 'lucide-react';
 
 export const DatasetSection: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,108 +46,109 @@ export const DatasetSection: React.FC = () => {
       setSortAsc(!sortAsc);
     } else {
       setSortField(field);
-      setSortAsc(false); // default to descending for numbers
+      setSortAsc(false);
     }
   };
 
   return (
-    <section className="section" style={{ backgroundColor: 'var(--bg-surface-subtle)' }}>
+    <section className="section" style={{ backgroundColor: 'var(--bg-surface-subtle)', position: 'relative' }}>
       <div className="container">
-        <SectionHeading
-          badge="04 / BENCHMARK DATASET PREVIEW"
-          badgeVariant="emerald"
-          title="Curated Benchmark Dataset & Standardized Schema"
-          highlightWords={['Benchmark Dataset', 'Standardized Schema']}
-          description="A unified compilation of empirical brick formulation experiments extracted from peer-reviewed literature and normalized under IS 12894:2002 guidelines."
-          align="left"
-        />
-
-        {/* Prominent Demo Notice */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            flexWrap: 'wrap',
-            gap: 'var(--space-3)',
-            padding: 'var(--space-3) var(--space-4)',
-            backgroundColor: 'var(--accent-mineral-subtle)',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--accent-mineral-light)',
-            marginBottom: 'var(--space-6)',
-            fontSize: '0.85rem',
-            color: 'var(--text-primary)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-            <Info size={16} color="var(--accent-mineral)" />
-            <span>
-              <strong>Demo Dataset:</strong> Displaying 18 verified academic formulations for interface evaluation and model prototyping.
-            </span>
+        {/* Editorial Section Header */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', justifyContent: 'space-between', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+          <div>
+            <div className="editorial-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>
+              Standardized Research Repository &bull; IS 12894 Schema
+            </div>
+            <h2 style={{ fontSize: 'clamp(1.85rem, 3vw + 0.5rem, 2.6rem)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+              The Intelligent Benchmark Dataset
+            </h2>
+            <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '640px', marginTop: 'var(--space-2)' }}>
+              Experimental mix designs extracted from peer-reviewed literature and normalized into a unified, reproducible feature space with stoichiometric verification.
+            </p>
           </div>
-          <span className="badge badge-amber font-mono" style={{ fontSize: '0.7rem' }}>
-            SIMULATED BENCHMARK v0.1
-          </span>
+
+          <Link to="/platform/dataset">
+            <Button variant="outline" size="sm" icon={<ExternalLink size={14} />} iconPosition="right">
+              View Complete 18-Record Explorer
+            </Button>
+          </Link>
         </div>
 
-        {/* Filter and Control Bar */}
-        <GlassPanel padding="md" style={{ marginBottom: 'var(--space-4)' }}>
+        {/* 1. Interactive Scatter Plot Correlation */}
+        <div style={{ marginBottom: 'var(--space-8)' }}>
+          <ScatterPlotVisualizer />
+        </div>
+
+        {/* 2. Scientific Data Product Table */}
+        <div
+          style={{
+            backgroundColor: 'var(--bg-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--border-medium)',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Scientific Filter Controls Bar */}
           <div
             style={{
+              padding: 'var(--space-3) var(--space-4)',
+              borderBottom: '1px solid var(--border-hairline)',
+              backgroundColor: 'var(--bg-surface)',
               display: 'flex',
               flexWrap: 'wrap',
               alignItems: 'center',
               justifyContent: 'space-between',
-              gap: 'var(--space-4)',
+              gap: 'var(--space-3)',
             }}
           >
             {/* Search Input */}
-            <div style={{ position: 'relative', flex: '1 1 240px', minWidth: '220px' }}>
+            <div style={{ position: 'relative', flex: '1 1 240px', minWidth: '200px' }}>
               <Search
-                size={16}
-                style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
+                size={14}
+                style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }}
               />
               <input
                 type="text"
-                placeholder="Search mix ID, author, or DOI..."
+                placeholder="Search mix ID, author, DOI..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '0.5rem 0.85rem 0.5rem 2.25rem',
+                  padding: '0.4rem 0.75rem 0.4rem 2rem',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-medium)',
-                  backgroundColor: 'var(--bg-surface)',
+                  backgroundColor: 'var(--bg-surface-subtle)',
                   color: 'var(--text-primary)',
+                  fontSize: '0.84rem',
                 }}
               />
             </div>
 
             {/* Curing Filter */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-tertiary)' }}>Curing:</span>
+              <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)' }}>Curing:</span>
               <select
                 value={curingFilter}
                 onChange={(e) => setCuringFilter(e.target.value as any)}
                 style={{
-                  padding: '0.45rem 0.75rem',
+                  padding: '0.35rem 0.65rem',
                   borderRadius: 'var(--radius-sm)',
                   border: '1px solid var(--border-medium)',
-                  backgroundColor: 'var(--bg-surface)',
+                  backgroundColor: 'var(--bg-surface-subtle)',
                   color: 'var(--text-primary)',
-                  fontSize: '0.85rem',
+                  fontSize: '0.8rem',
                 }}
               >
                 <option value="all">All Durations</option>
                 <option value="7">7 Days</option>
                 <option value="14">14 Days</option>
-                <option value="28">28 Days (Standard)</option>
+                <option value="28">28 Days (Std)</option>
               </select>
             </div>
 
             {/* Min Fly Ash Slider */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-tertiary)' }}>
+              <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-tertiary)' }}>
                 Min FA: <strong style={{ color: 'var(--accent-primary)' }}>{minFlyAsh}%</strong>
               </span>
               <input
@@ -158,20 +158,18 @@ export const DatasetSection: React.FC = () => {
                 step="5"
                 value={minFlyAsh}
                 onChange={(e) => setMinFlyAsh(parseInt(e.target.value))}
-                style={{ width: '90px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
+                style={{ width: '80px', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
               />
             </div>
 
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+            <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
               Showing <strong>{filteredData.length}</strong> of {MOCK_FLY_ASH_DATASET.length} mixes
             </span>
           </div>
-        </GlassPanel>
 
-        {/* Interactive Responsive Table Container */}
-        <GlassPanel padding="none" style={{ overflow: 'hidden', border: '1px solid var(--border-medium)' }}>
-          <div style={{ overflowX: 'auto', maxHeight: '520px' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem', textAlign: 'left' }}>
+          {/* Dense Scientific Table */}
+          <div style={{ overflowX: 'auto', maxHeight: '460px' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.84rem', textAlign: 'left' }}>
               <thead
                 style={{
                   position: 'sticky',
@@ -181,35 +179,35 @@ export const DatasetSection: React.FC = () => {
                   zIndex: 2,
                 }}
               >
-                <tr style={{ color: 'var(--text-tertiary)', fontSize: '0.76rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                  <th style={{ padding: '12px 16px' }}>
+                <tr style={{ color: 'var(--text-tertiary)', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  <th style={{ padding: '10px 14px' }}>
                     <button onClick={() => handleSort('mixId')} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: 'inherit' }}>
-                      Mix ID <ArrowUpDown size={12} />
+                      Mix ID <ArrowUpDown size={11} />
                     </button>
                   </th>
-                  <th style={{ padding: '12px 12px' }}>Paper / Author</th>
-                  <th style={{ padding: '12px 12px' }}>
+                  <th style={{ padding: '10px 12px' }}>Paper / Author</th>
+                  <th style={{ padding: '10px 12px' }}>
                     <button onClick={() => handleSort('flyAshPercent')} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: 'inherit' }}>
-                      Fly Ash % <ArrowUpDown size={12} />
+                      FA % <ArrowUpDown size={11} />
                     </button>
                   </th>
-                  <th style={{ padding: '12px 12px' }}>Cement %</th>
-                  <th style={{ padding: '12px 12px' }}>Lime %</th>
-                  <th style={{ padding: '12px 12px' }}>Gypsum %</th>
-                  <th style={{ padding: '12px 12px' }}>Sand/Dust %</th>
-                  <th style={{ padding: '12px 12px' }}>W/B</th>
-                  <th style={{ padding: '12px 12px' }}>Curing</th>
-                  <th style={{ padding: '12px 12px' }}>
+                  <th style={{ padding: '10px 12px' }}>Cement %</th>
+                  <th style={{ padding: '10px 12px' }}>Lime %</th>
+                  <th style={{ padding: '10px 12px' }}>Gyp %</th>
+                  <th style={{ padding: '10px 12px' }}>Sand/Dust %</th>
+                  <th style={{ padding: '10px 12px' }}>W/B</th>
+                  <th style={{ padding: '10px 12px' }}>Curing</th>
+                  <th style={{ padding: '10px 12px' }}>
                     <button onClick={() => handleSort('compressiveStrength')} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: 'inherit' }}>
-                      Strength (MPa) <ArrowUpDown size={12} />
+                      Strength (MPa) <ArrowUpDown size={11} />
                     </button>
                   </th>
-                  <th style={{ padding: '12px 12px' }}>
+                  <th style={{ padding: '10px 12px' }}>
                     <button onClick={() => handleSort('waterAbsorption')} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 700, color: 'inherit' }}>
-                      Absorption % <ArrowUpDown size={12} />
+                      Abs % <ArrowUpDown size={11} />
                     </button>
                   </th>
-                  <th style={{ padding: '12px 16px', textAlign: 'right' }}>Inspect</th>
+                  <th style={{ padding: '10px 14px', textAlign: 'right' }}>Inspect</th>
                 </tr>
               </thead>
               <tbody>
@@ -217,59 +215,59 @@ export const DatasetSection: React.FC = () => {
                   <tr
                     key={row.id}
                     style={{
-                      borderBottom: '1px solid var(--border-subtle)',
+                      borderBottom: '1px solid var(--border-hairline)',
                       transition: 'background-color 150ms ease',
                       cursor: 'pointer',
                     }}
                     className="dataset-row"
                     onClick={() => setSelectedRecord(row)}
                   >
-                    <td style={{ padding: '10px 16px', fontWeight: 700, color: 'var(--accent-primary)' }} className="font-mono">
+                    <td style={{ padding: '9px 14px', fontWeight: 700, color: 'var(--accent-primary)' }} className="font-mono">
                       {row.mixId}
                     </td>
-                    <td style={{ padding: '10px 12px', color: 'var(--text-secondary)' }}>
+                    <td style={{ padding: '9px 12px', color: 'var(--text-secondary)' }}>
                       <div>{row.authors}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{row.year}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{row.year}</div>
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text-primary)' }} className="font-mono">
+                    <td style={{ padding: '9px 12px', fontWeight: 600, color: 'var(--text-primary)' }} className="font-mono">
                       {row.flyAshPercent}%
                     </td>
-                    <td style={{ padding: '10px 12px', color: row.cementPercent === 0 ? 'var(--status-success)' : 'var(--text-primary)' }} className="font-mono">
-                      {row.cementPercent === 0 ? '0% (No OPC)' : `${row.cementPercent}%`}
+                    <td style={{ padding: '9px 12px', color: row.cementPercent === 0 ? 'var(--status-success)' : 'var(--text-primary)' }} className="font-mono">
+                      {row.cementPercent === 0 ? '0% (FaL-G)' : `${row.cementPercent}%`}
                     </td>
-                    <td style={{ padding: '10px 12px' }} className="font-mono">{row.limePercent}%</td>
-                    <td style={{ padding: '10px 12px' }} className="font-mono">{row.gypsumPercent}%</td>
-                    <td style={{ padding: '10px 12px' }} className="font-mono">{row.sandPercent + row.quarryDustPercent}%</td>
-                    <td style={{ padding: '10px 12px' }} className="font-mono">{row.waterBinderRatio}</td>
-                    <td style={{ padding: '10px 12px' }}>
-                      <span className="badge badge-subtle font-mono" style={{ fontSize: '0.7rem' }}>
+                    <td style={{ padding: '9px 12px' }} className="font-mono">{row.limePercent}%</td>
+                    <td style={{ padding: '9px 12px' }} className="font-mono">{row.gypsumPercent}%</td>
+                    <td style={{ padding: '9px 12px' }} className="font-mono">{row.sandPercent + row.quarryDustPercent}%</td>
+                    <td style={{ padding: '9px 12px' }} className="font-mono">{row.waterBinderRatio}</td>
+                    <td style={{ padding: '9px 12px' }}>
+                      <span className="badge badge-subtle font-mono" style={{ fontSize: '0.68rem' }}>
                         {row.curingDays}d
                       </span>
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 700, color: 'var(--accent-primary)' }} className="font-mono">
+                    <td style={{ padding: '9px 12px', fontWeight: 700, color: 'var(--accent-primary)' }} className="font-mono">
                       {row.compressiveStrength}
                     </td>
-                    <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--accent-secondary)' }} className="font-mono">
+                    <td style={{ padding: '9px 12px', fontWeight: 600, color: 'var(--accent-secondary)' }} className="font-mono">
                       {row.waterAbsorption}%
                     </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right' }}>
+                    <td style={{ padding: '9px 14px', textAlign: 'right' }}>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedRecord(row);
                         }}
                         style={{
-                          padding: '4px 8px',
-                          borderRadius: 'var(--radius-sm)',
+                          padding: '3px 8px',
+                          borderRadius: 'var(--radius-xs)',
                           backgroundColor: 'var(--bg-surface-subtle)',
                           color: 'var(--text-secondary)',
-                          fontSize: '0.75rem',
+                          fontSize: '0.74rem',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: '4px',
                         }}
                       >
-                        <Eye size={12} /> Inspect
+                        <Eye size={12} /> View
                       </button>
                     </td>
                   </tr>
@@ -277,26 +275,10 @@ export const DatasetSection: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </GlassPanel>
-
-        {/* Footer Link to Dedicated Dataset Explorer */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-4)', flexWrap: 'wrap', gap: 'var(--space-3)' }}>
-          <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-            Dataset adheres to IS 12894:2002 testing protocols and stoichiometric balance.
-          </span>
-          <Link to="/platform/dataset">
-            <Button variant="outline" size="sm" icon={<ExternalLink size={14} />} iconPosition="right">
-              Open Full Dataset Explorer & CSV Export
-            </Button>
-          </Link>
         </div>
       </div>
 
-      {/* Record Inspector Modal */}
-      <RecordDetailModal
-        record={selectedRecord}
-        onClose={() => setSelectedRecord(null)}
-      />
+      <RecordDetailModal record={selectedRecord} onClose={() => setSelectedRecord(null)} />
 
       <style>{`
         .dataset-row:hover {

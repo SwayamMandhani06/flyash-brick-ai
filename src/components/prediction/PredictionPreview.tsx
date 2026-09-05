@@ -1,6 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { SectionHeading } from '../common/SectionHeading';
-import { GlassPanel } from '../common/GlassPanel';
 import { Button } from '../common/Button';
 import { AnimatedCounter } from '../common/AnimatedCounter';
 import { ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-react';
@@ -23,23 +21,19 @@ export const PredictionPreview: React.FC = () => {
 
   // Empirical Surrogate Model Calculation for Interface Demo
   const { predictedStrength, predictedAbsorption, isClass } = useMemo(() => {
-    // Base strength from active binder chemistry
     const binderEffect = (lime * 0.42) + (gypsum * 0.75) + (cement * 0.95);
     const fillerEffect = (flyAsh * 0.12);
-    const wbPenalty = (0.20 - waterBinder) * 45; // lower W/B increases density
+    const wbPenalty = (0.20 - waterBinder) * 45;
 
     const ageMultiplier = curingDays === 7 ? 0.52 : curingDays === 14 ? 0.74 : 1.0;
 
     let strength = (binderEffect + fillerEffect + wbPenalty) * ageMultiplier;
-    // Bound to realistic physical limits
     strength = Math.max(4.0, Math.min(26.5, parseFloat(strength.toFixed(1))));
 
-    // Water absorption inversely related to density and compaction
     let absorption = 22.0 - (strength * 0.52) - (cement * 0.15) - (lime * 0.1);
     absorption = Math.max(7.5, Math.min(22.0, parseFloat(absorption.toFixed(1))));
 
-    // Determine IS 12894 Class
-    let cls: string = 'Non-Conforming';
+    let cls = 'Non-Conforming';
     if (strength >= 20.0) cls = 'Class 20';
     else if (strength >= 17.5) cls = 'Class 17.5';
     else if (strength >= 15.0) cls = 'Class 15';
@@ -47,60 +41,92 @@ export const PredictionPreview: React.FC = () => {
     else if (strength >= 10.0) cls = 'Class 10';
     else if (strength >= 7.5) cls = 'Class 7.5';
 
-    const isConforming = strength >= 7.5 && absorption <= 20.0;
-
     return {
       predictedStrength: strength,
       predictedAbsorption: absorption,
       isClass: cls,
-      complianceStatus: isConforming,
     };
   }, [flyAsh, cement, lime, gypsum, curingDays, waterBinder]);
 
   const totalProportion = flyAsh + cement + lime + gypsum + sandAggregate;
 
   return (
-    <section className="section" style={{ backgroundColor: 'var(--bg-app)', position: 'relative' }}>
+    <section className="section" style={{ backgroundColor: 'var(--bg-app)', borderBottom: '1px solid var(--border-hairline)' }}>
       <div className="container">
-        <SectionHeading
-          badge="05 / QUALITY PREDICTION ENGINE"
-          badgeVariant="amber"
-          title="Adaptive AI Quality Prediction Sandbox"
-          highlightWords={['Quality Prediction Sandbox']}
-          description="Adjust experimental constituent proportions and observe real-time predictions of 28-day compressive strength and water absorption against IS 12894 standards."
-          align="left"
-        />
+        {/* Editorial Section Header */}
+        <div style={{ marginBottom: 'var(--space-8)' }}>
+          <div className="editorial-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>
+            SURROGATE MACHINE LEARNING &bull; SAMPLE PREDICTION
+          </div>
+          <h2 style={{ fontSize: 'clamp(1.85rem, 3vw + 0.5rem, 2.6rem)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+            Adaptive Quality Prediction Sandbox
+          </h2>
+          <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '640px', marginTop: 'var(--space-2)' }}>
+            Adjust batching constituents and observe real-time surrogate inference for 28-day compressive strength and water absorption against IS 12894 building standards.
+          </p>
+        </div>
+
+        {/* 3-Step Scientific Flow Indicator */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--space-4)',
+            padding: 'var(--space-3) var(--space-4)',
+            backgroundColor: 'var(--bg-surface-subtle)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border-hairline)',
+            marginBottom: 'var(--space-6)',
+            fontSize: '0.8rem',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-tertiary)',
+            overflowX: 'auto',
+          }}
+        >
+          <span style={{ color: 'var(--accent-primary)', fontWeight: 700 }}>01. Batch Inputs</span>
+          <span>&rarr;</span>
+          <span style={{ color: 'var(--accent-secondary)', fontWeight: 700 }}>02. Model Inference</span>
+          <span>&rarr;</span>
+          <span style={{ color: 'var(--accent-mineral)', fontWeight: 700 }}>03. IS 12894 Classification</span>
+          <span style={{ marginLeft: 'auto', color: 'var(--text-muted)' }}>Demo Model Output</span>
+        </div>
 
         <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
             gap: 'var(--space-8)',
-            alignItems: 'stretch',
           }}
           className="prediction-grid"
         >
           {/* Left Column: Mix Parameters Slider Controls */}
-          <GlassPanel elevation="medium" padding="lg">
+          <div
+            style={{
+              padding: 'var(--space-6)',
+              backgroundColor: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border-medium)',
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-5)' }}>
               <div>
-                <span className="badge badge-subtle font-mono">INPUT BATCH</span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '4px' }}>
-                  Raw Constituent Proportions
+                <span className="editorial-eyebrow" style={{ fontSize: '0.7rem' }}>INPUT PARAMETERS</span>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginTop: '2px', color: 'var(--text-primary)' }}>
+                  Constituent Proportions
                 </h3>
               </div>
               <div
                 style={{
-                  fontSize: '0.78rem',
+                  fontSize: '0.76rem',
                   fontFamily: 'var(--font-mono)',
-                  padding: '4px 8px',
-                  borderRadius: 'var(--radius-sm)',
+                  padding: '3px 8px',
+                  borderRadius: 'var(--radius-xs)',
                   backgroundColor: totalProportion === 100 ? 'var(--status-success-bg)' : 'var(--status-warning-bg)',
                   color: totalProportion === 100 ? 'var(--status-success)' : 'var(--status-warning)',
-                  fontWeight: 600,
+                  fontWeight: 700,
                 }}
               >
-                Sum: {totalProportion}% Dry Mass
+                Sum: {totalProportion}% Dry Solids
               </div>
             </div>
 
@@ -108,7 +134,7 @@ export const PredictionPreview: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
               {/* Fly Ash Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginBottom: '4px' }}>
                   <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Fly Ash (Class F)</span>
                   <span className="font-mono" style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{flyAsh}%</span>
                 </div>
@@ -121,16 +147,16 @@ export const PredictionPreview: React.FC = () => {
                   onChange={(e) => setFlyAsh(parseInt(e.target.value))}
                   style={{ width: '100%', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   <span>40%</span>
-                  <span>Recommended: 55-70%</span>
+                  <span>Range: 55–70%</span>
                   <span>80%</span>
                 </div>
               </div>
 
               {/* Lime (CaO) Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginBottom: '4px' }}>
                   <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Hydrated Lime / CaO</span>
                   <span className="font-mono" style={{ fontWeight: 700, color: 'var(--accent-mineral)' }}>{lime}%</span>
                 </div>
@@ -143,16 +169,16 @@ export const PredictionPreview: React.FC = () => {
                   onChange={(e) => setLime(parseInt(e.target.value))}
                   style={{ width: '100%', accentColor: 'var(--accent-mineral)', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   <span>5%</span>
-                  <span>Activator: 12-20%</span>
+                  <span>Activator: 12–20%</span>
                   <span>25%</span>
                 </div>
               </div>
 
               {/* Gypsum Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginBottom: '4px' }}>
                   <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Phosphogypsum / Gypsum</span>
                   <span className="font-mono" style={{ fontWeight: 700, color: 'var(--accent-secondary)' }}>{gypsum}%</span>
                 </div>
@@ -165,17 +191,17 @@ export const PredictionPreview: React.FC = () => {
                   onChange={(e) => setGypsum(parseInt(e.target.value))}
                   style={{ width: '100%', accentColor: 'var(--accent-secondary)', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   <span>2%</span>
-                  <span>Ettringite accelerator: 3-6%</span>
+                  <span>Sulfate accelerator: 3–6%</span>
                   <span>10%</span>
                 </div>
               </div>
 
               {/* OPC Cement Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Portland Cement (OPC-43/53)</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginBottom: '4px' }}>
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Portland Cement (OPC)</span>
                   <span className="font-mono" style={{ fontWeight: 700, color: cement === 0 ? 'var(--status-success)' : 'var(--text-primary)' }}>
                     {cement === 0 ? '0% (Zero-Clinker)' : `${cement}%`}
                   </span>
@@ -189,8 +215,8 @@ export const PredictionPreview: React.FC = () => {
                   onChange={(e) => setCement(parseInt(e.target.value))}
                   style={{ width: '100%', accentColor: 'var(--accent-primary)', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                  <span>0% (Green)</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  <span>0% (Green FaL-G)</span>
                   <span>Optional additive</span>
                   <span>15%</span>
                 </div>
@@ -198,7 +224,7 @@ export const PredictionPreview: React.FC = () => {
 
               {/* Water to Binder Ratio Slider */}
               <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.88rem', marginBottom: '4px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.86rem', marginBottom: '4px' }}>
                   <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Water-to-Binder Ratio (W/B)</span>
                   <span className="font-mono" style={{ fontWeight: 700, color: 'var(--accent-secondary)' }}>{waterBinder}</span>
                 </div>
@@ -211,22 +237,22 @@ export const PredictionPreview: React.FC = () => {
                   onChange={(e) => setWaterBinder(parseFloat(e.target.value))}
                   style={{ width: '100%', accentColor: 'var(--accent-secondary)', cursor: 'pointer' }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                   <span>0.10 (Dry Mix)</span>
-                  <span>Standard: 0.13-0.16</span>
-                  <span>0.20 (Slurry)</span>
+                  <span>Standard: 0.13–0.16</span>
+                  <span>0.20</span>
                 </div>
               </div>
 
-              {/* Inert Sand / Quarry Dust Balance Display */}
-              <div style={{ padding: 'var(--space-3)', backgroundColor: 'var(--bg-surface-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Inert Sand / Quarry Dust (Auto-Balanced):</span>
+              {/* Inert Sand / Quarry Dust Balance */}
+              <div style={{ padding: 'var(--space-3)', backgroundColor: 'var(--bg-surface-subtle)', borderRadius: 'var(--radius-sm)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Sand / Inert Dust (Auto-Balanced):</span>
                 <span className="font-mono" style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{sandAggregate}%</span>
               </div>
 
-              {/* Curing Regimen Selector */}
+              {/* Curing Duration */}
               <div>
-                <div style={{ fontSize: '0.85rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 600, marginBottom: 'var(--space-2)' }}>
                   Curing Regimen Duration:
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-2)' }}>
@@ -239,32 +265,47 @@ export const PredictionPreview: React.FC = () => {
                         borderRadius: 'var(--radius-sm)',
                         fontSize: '0.82rem',
                         fontWeight: curingDays === days ? 700 : 500,
-                        backgroundColor: curingDays === days ? 'var(--accent-primary)' : 'var(--bg-surface)',
+                        backgroundColor: curingDays === days ? 'var(--accent-primary)' : 'var(--bg-surface-subtle)',
                         color: curingDays === days ? '#ffffff' : 'var(--text-secondary)',
                         border: '1px solid var(--border-medium)',
                         cursor: 'pointer',
                         transition: 'all 150ms ease',
                       }}
                     >
-                      {days} Days {days === 28 ? '(Std)' : ''}
+                      {days} Days {days === 28 ? '(Standard)' : ''}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
-          </GlassPanel>
+          </div>
 
           {/* Right Column: Real-Time Quality Output Visualizer */}
-          <GlassPanel elevation="high" padding="lg" accentBorder style={{ display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{
+              padding: 'var(--space-6)',
+              backgroundColor: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border-medium)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
               <div>
-                <span className="badge badge-emerald font-mono">PREDICTED QUALITY</span>
-                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '4px' }}>
-                  Model Output Telemetry
+                <span className="editorial-eyebrow" style={{ fontSize: '0.7rem' }}>MODEL INFERENCE OUTPUT</span>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginTop: '2px', color: 'var(--text-primary)' }}>
+                  Predicted Mechanical Performance
                 </h3>
               </div>
-              <span className="badge badge-subtle font-mono" style={{ fontSize: '0.72rem' }}>
-                Illustrative Surrogate
+              <span
+                style={{
+                  fontSize: '0.7rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--text-muted)',
+                }}
+              >
+                Sample Output
               </span>
             </div>
 
@@ -274,19 +315,19 @@ export const PredictionPreview: React.FC = () => {
               <div
                 style={{
                   padding: 'var(--space-5)',
-                  borderRadius: 'var(--radius-lg)',
-                  backgroundColor: 'var(--accent-primary-subtle)',
-                  border: '1px solid var(--accent-primary-light)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'var(--bg-surface-subtle)',
+                  border: '1px solid var(--border-hairline)',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-primary)', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-primary)', letterSpacing: '0.04em' }}>
                   Compressive Strength
                 </span>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)', margin: 'var(--space-2) 0' }} className="font-mono">
-                  <AnimatedCounter end={predictedStrength} decimals={1} /> <span style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--text-tertiary)' }}>MPa</span>
+                <div style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 'var(--space-2) 0' }} className="font-mono">
+                  <AnimatedCounter end={predictedStrength} decimals={1} /> <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-tertiary)' }}>MPa</span>
                 </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <div>
                   <span className="badge badge-emerald font-mono" style={{ fontSize: '0.75rem' }}>
                     {isClass}
                   </span>
@@ -297,19 +338,19 @@ export const PredictionPreview: React.FC = () => {
               <div
                 style={{
                   padding: 'var(--space-5)',
-                  borderRadius: 'var(--radius-lg)',
-                  backgroundColor: 'var(--accent-secondary-subtle)',
-                  border: '1px solid var(--accent-secondary-light)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: 'var(--bg-surface-subtle)',
+                  border: '1px solid var(--border-hairline)',
                   textAlign: 'center',
                 }}
               >
-                <span style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-secondary)', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent-secondary)', letterSpacing: '0.04em' }}>
                   Water Absorption
                 </span>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--text-primary)', margin: 'var(--space-2) 0' }} className="font-mono">
-                  <AnimatedCounter end={predictedAbsorption} decimals={1} /> <span style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--text-tertiary)' }}>%</span>
+                <div style={{ fontSize: '2.4rem', fontWeight: 800, color: 'var(--text-primary)', margin: 'var(--space-2) 0' }} className="font-mono">
+                  <AnimatedCounter end={predictedAbsorption} decimals={1} /> <span style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--text-tertiary)' }}>%</span>
                 </div>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                <div>
                   <span
                     className="badge font-mono"
                     style={{
@@ -318,40 +359,40 @@ export const PredictionPreview: React.FC = () => {
                       color: predictedAbsorption <= 20.0 ? 'var(--status-success)' : 'var(--status-danger)',
                     }}
                   >
-                    {predictedAbsorption <= 20.0 ? 'Pass (≤20% IS Spec)' : 'Fails Absorption'}
+                    {predictedAbsorption <= 20.0 ? 'Pass (≤20% IS 12894)' : 'Fails Limit'}
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Standards Compliance Checklist */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 'var(--space-6)', padding: 'var(--space-4)', backgroundColor: 'var(--bg-surface-subtle)', borderRadius: 'var(--radius-md)' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-tertiary)' }}>
-                IS 12894:2002 Conformance Assessment:
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', marginBottom: 'var(--space-6)', padding: 'var(--space-4)', backgroundColor: 'var(--bg-surface-subtle)', borderRadius: 'var(--radius-sm)' }}>
+              <div style={{ fontSize: '0.76rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-tertiary)', fontFamily: 'var(--font-mono)' }}>
+                IS 12894:2002 Conformance Check:
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.84rem' }}>
                 <CheckCircle2 size={16} color="var(--status-success)" />
-                <span>Minimum Compressive Strength (≥ 7.5 MPa): <strong>{predictedStrength >= 7.5 ? 'Conforms' : 'Non-Conforming'}</strong></span>
+                <span>Minimum Compressive Strength (≥ 7.5 MPa): <strong>{predictedStrength >= 7.5 ? 'Conforms' : 'Below code threshold'}</strong></span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.84rem' }}>
                 <CheckCircle2 size={16} color="var(--status-success)" />
-                <span>24-hour Cold Water Absorption (≤ 20% by mass): <strong>{predictedAbsorption <= 20 ? 'Conforms' : 'Exceeds limit'}</strong></span>
+                <span>24-hour Water Absorption (≤ 20% by mass): <strong>{predictedAbsorption <= 20 ? 'Conforms' : 'Exceeds limit'}</strong></span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: '0.84rem' }}>
                 <ShieldCheck size={16} color="var(--accent-primary)" />
-                <span>Embodied Carbon Footprint: <strong>{cement === 0 ? '78% lower than burnt clay' : '55% lower than burnt clay'}</strong></span>
+                <span>Carbon Reduction: <strong>{cement === 0 ? '78% lower than burnt clay' : '55% lower than burnt clay'}</strong></span>
               </div>
             </div>
 
-            {/* Action CTA */}
+            {/* Link to Prediction Workbench */}
             <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'flex-end' }}>
               <Link to="/platform/prediction">
-                <Button variant="primary" icon={<ArrowRight size={16} />} iconPosition="right">
-                  Open Multi-Mix Prediction Sandbox
+                <Button variant="primary" size="sm" icon={<ArrowRight size={16} />} iconPosition="right">
+                  Open Multi-Mix Laboratory
                 </Button>
               </Link>
             </div>
-          </GlassPanel>
+          </div>
         </div>
       </div>
     </section>

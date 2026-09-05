@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Compass, ShieldCheck, Cpu, Leaf, Sparkles } from 'lucide-react';
+import { ArrowRight, Compass } from 'lucide-react';
 import { Button } from '../common/Button';
 import { InteractivePipeline } from './InteractivePipeline';
 
@@ -16,20 +16,21 @@ export const HeroSection: React.FC = () => {
     <section
       className="section technical-grid-bg"
       style={{
-        paddingTop: 'calc(var(--space-16) + 1rem)',
-        paddingBottom: 'var(--space-20)',
+        paddingTop: 'calc(var(--space-12) + 1rem)',
+        paddingBottom: 'var(--space-16)',
         position: 'relative',
         overflow: 'hidden',
+        borderBottom: '1px solid var(--border-hairline)',
       }}
     >
-      {/* Subtle Radial Ambient Illumination */}
+      {/* Subtle Ambient Radial Lighting */}
       <div
         style={{
           position: 'absolute',
-          top: '-10%',
-          right: '5%',
-          width: '500px',
-          height: '500px',
+          top: '-15%',
+          right: '8%',
+          width: '520px',
+          height: '520px',
           borderRadius: '50%',
           background: 'radial-gradient(circle, var(--glow-subtle) 0%, transparent 70%)',
           pointerEvents: 'none',
@@ -47,31 +48,28 @@ export const HeroSection: React.FC = () => {
           }}
           className="hero-grid"
         >
-          {/* Left Column: Mission & CTAs */}
+          {/* Left Column: Typographic Narrative */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Project Category Badge */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-4)' }}>
-              <span className="badge badge-emerald">
-                <Cpu size={13} />
-                B.Tech Computer Engineering Research
-              </span>
-              <span className="badge badge-subtle">
-                IS 12894:2002 Conformance
-              </span>
+            {/* Delicate Editorial Eyebrow */}
+            <div className="editorial-eyebrow stagger-1" style={{ marginBottom: 'var(--space-4)' }}>
+              Research Platform &bull; B.Tech Computer Engineering
             </div>
 
-            {/* Main Headline */}
+            {/* Headline with 3-4 Intentional Lines on Desktop */}
             <h1
+              className="stagger-2"
               style={{
-                fontSize: 'clamp(2.35rem, 3.8vw + 0.5rem, 3.5rem)',
+                fontSize: 'clamp(2.25rem, 3.8vw + 0.5rem, 3.45rem)',
                 fontWeight: 800,
-                lineHeight: 1.12,
+                lineHeight: 1.15,
                 letterSpacing: '-0.03em',
                 color: 'var(--text-primary)',
                 marginBottom: 'var(--space-5)',
+                maxWidth: '680px',
               }}
             >
-              Turning Fragmented Fly Ash Brick Research into{' '}
+              Turning Fly Ash Brick Research <br className="hero-desktop-br" />
+              into{' '}
               <span
                 style={{
                   background: 'linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%)',
@@ -79,26 +77,27 @@ export const HeroSection: React.FC = () => {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Intelligent Manufacturing
-              </span>{' '}
-              Decisions
+                Intelligent Manufacturing Decisions
+              </span>
             </h1>
 
-            {/* Subtitle / Value Proposition */}
+            {/* Concise Supporting Description */}
             <p
+              className="stagger-3"
               style={{
-                fontSize: '1.12rem',
+                fontSize: '1.1rem',
                 lineHeight: 1.65,
                 color: 'var(--text-secondary)',
                 marginBottom: 'var(--space-8)',
-                maxWidth: '580px',
+                maxWidth: '560px',
               }}
             >
-              An end-to-end framework integrating automated literature table extraction, standardized benchmark datasets, adaptive AI quality prediction, and multi-objective manufacturing optimization for sustainable construction materials.
+              An AI-driven computational framework that extracts experimental literature, standardizes benchmark datasets, predicts mechanical performance, and optimizes sustainable brick manufacturing parameters.
             </p>
 
             {/* CTAs */}
             <div
+              className="stagger-4"
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
@@ -127,33 +126,30 @@ export const HeroSection: React.FC = () => {
               </Button>
             </div>
 
-            {/* Engineering Pillars Micro-Badges */}
+            {/* Editorial Meta Strip with Hairline Dividers */}
             <div
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
+                alignItems: 'center',
                 gap: 'var(--space-4)',
-                paddingTop: 'var(--space-5)',
-                borderTop: '1px solid var(--border-subtle)',
+                paddingTop: 'var(--space-4)',
+                borderTop: '1px solid var(--border-hairline)',
                 width: '100%',
+                fontSize: '0.8rem',
+                fontFamily: 'var(--font-mono)',
+                color: 'var(--text-tertiary)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>
-                <Leaf size={15} color="var(--accent-primary)" />
-                <span>Zero-Clinker Geopolymer Pathways</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>
-                <ShieldCheck size={15} color="var(--accent-secondary)" />
-                <span>Standardized IS 12894 Schema</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontSize: '0.82rem', color: 'var(--text-tertiary)' }}>
-                <Sparkles size={15} color="var(--accent-mineral)" />
-                <span>Constrained Pareto Mix Tuning</span>
-              </div>
+              <span>Zero-Clinker Geopolymers</span>
+              <span style={{ color: 'var(--border-medium)' }}>/</span>
+              <span>IS 12894:2002 Framework</span>
+              <span style={{ color: 'var(--border-medium)' }}>/</span>
+              <span>Constrained Pareto Search</span>
             </div>
           </div>
 
-          {/* Right Column: Interactive Pipeline Simulation */}
+          {/* Right Column: Living Pipeline Graph */}
           <div style={{ width: '100%' }}>
             <InteractivePipeline />
           </div>
@@ -164,6 +160,14 @@ export const HeroSection: React.FC = () => {
         @media (min-width: 1024px) {
           .hero-grid {
             grid-template-columns: 1.15fr 1fr !important;
+          }
+          .hero-desktop-br {
+            display: inline;
+          }
+        }
+        @media (max-width: 1023px) {
+          .hero-desktop-br {
+            display: none;
           }
         }
       `}</style>

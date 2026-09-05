@@ -1,235 +1,323 @@
 import React, { useState } from 'react';
-import { PIPELINE_STAGES } from '../../data/pipelineStages';
-import { GlassPanel } from '../common/GlassPanel';
-import { BookOpen, FileSpreadsheet, Database, Cpu, Sliders, CheckCircle2, Activity } from 'lucide-react';
+import { BookOpen, FileSpreadsheet, Database, Cpu, Sliders, CheckCircle2 } from 'lucide-react';
+
+interface PipelineNodeData {
+  id: string;
+  stepNumber: string;
+  title: string;
+  microSummary: string;
+  detail: string;
+  icon: React.ReactNode;
+  accent: string;
+  sampleMetric: string;
+}
 
 export const InteractivePipeline: React.FC = () => {
-  const [activeStageId, setActiveStageId] = useState<string>('stage-prediction');
+  const [activeNodeId, setActiveNodeId] = useState<string>('node-prediction');
 
-  const activeStage = PIPELINE_STAGES.find((s) => s.id === activeStageId) || PIPELINE_STAGES[3];
+  const nodes: PipelineNodeData[] = [
+    {
+      id: 'node-papers',
+      stepNumber: '01',
+      title: 'Research Papers',
+      microSummary: 'Experimental literature',
+      detail: 'Heterogeneous journal publications (Elsevier, Springer, ASCE) containing non-standardized mix tables.',
+      icon: <BookOpen size={16} />,
+      accent: 'var(--accent-mineral)',
+      sampleMetric: '42+ papers catalogued',
+    },
+    {
+      id: 'node-docai',
+      stepNumber: '02',
+      title: 'Document Intelligence',
+      microSummary: 'Table detection + extraction',
+      detail: 'Bounding-box heuristics and OCR parsing convert published mix matrices into raw chemical constituents.',
+      icon: <FileSpreadsheet size={16} />,
+      accent: 'var(--accent-secondary)',
+      sampleMetric: '380+ rows parsed',
+    },
+    {
+      id: 'node-dataset',
+      stepNumber: '03',
+      title: 'Benchmark Dataset',
+      microSummary: 'Standardized experimental records',
+      detail: 'Dry-solid mass balance (100% sum check) and standardization conforming to IS 12894 and IS 3812 guidelines.',
+      icon: <Database size={16} />,
+      accent: 'var(--accent-primary)',
+      sampleMetric: '18 verified benchmarks',
+    },
+    {
+      id: 'node-prediction',
+      stepNumber: '04',
+      title: 'AI Prediction',
+      microSummary: 'Strength + water absorption',
+      detail: 'Multi-target surrogate models forecasting 28-day compressive strength and water absorption in milliseconds.',
+      icon: <Cpu size={16} />,
+      accent: 'var(--accent-primary)',
+      sampleMetric: 'Dual-target inference',
+    },
+    {
+      id: 'node-optimization',
+      stepNumber: '05',
+      title: 'Mix Optimization',
+      microSummary: 'Feasible manufacturing settings',
+      detail: 'Constrained Pareto frontier exploration maximizing fly ash utilization while meeting required building codes.',
+      icon: <Sliders size={16} />,
+      accent: 'var(--accent-secondary)',
+      sampleMetric: 'Up to 72% fly ash ratio',
+    },
+    {
+      id: 'node-decision',
+      stepNumber: '06',
+      title: 'Manufacturing Decision',
+      microSummary: 'Actionable recommendation',
+      detail: 'Production batch sheet specifying pan mixer weights, hydraulic compaction pressure, and water dosage.',
+      icon: <CheckCircle2 size={16} />,
+      accent: 'var(--status-success)',
+      sampleMetric: 'Ready-to-batch recipe',
+    },
+  ];
 
-  const getStageIcon = (id: string, size = 18) => {
-    switch (id) {
-      case 'stage-literature': return <BookOpen size={size} />;
-      case 'stage-standardization': return <FileSpreadsheet size={size} />;
-      case 'stage-dataset': return <Database size={size} />;
-      case 'stage-prediction': return <Cpu size={size} />;
-      case 'stage-optimization': return <Sliders size={size} />;
-      case 'stage-decision': return <CheckCircle2 size={size} />;
-      default: return <Activity size={size} />;
-    }
-  };
+  const activeNode = nodes.find((n) => n.id === activeNodeId) || nodes[3];
 
   return (
-    <GlassPanel
-      elevation="high"
-      padding="none"
-      accentBorder
+    <div
       style={{
-        display: 'flex',
-        flexDirection: 'column',
-        borderRadius: 'var(--radius-xl)',
-        overflow: 'hidden',
-        border: '1px solid var(--border-medium)',
+        position: 'relative',
+        width: '100%',
+        maxWidth: '560px',
+        margin: '0 auto',
       }}
     >
-      {/* Visual Terminal Bar */}
+      {/* Visual System Header Badge */}
       <div
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: 'var(--space-3) var(--space-5)',
-          backgroundColor: 'var(--bg-surface-subtle)',
-          borderBottom: '1px solid var(--border-subtle)',
-          fontSize: '0.8rem',
+          paddingBottom: 'var(--space-3)',
+          borderBottom: '1px solid var(--border-hairline)',
+          marginBottom: 'var(--space-4)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-          <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--accent-primary)', display: 'inline-block' }} className="animate-pulse-subtle" />
-          <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>
-            INTERACTIVE PIPELINE ARCHITECTURE
+          <span
+            style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--accent-primary)',
+            }}
+            className="animate-pulse-subtle"
+          />
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '0.72rem',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              color: 'var(--text-tertiary)',
+            }}
+          >
+            INTELLIGENCE PIPELINE GRAPH
           </span>
         </div>
         <span
-          className="badge badge-emerald"
-          style={{ fontSize: '0.68rem', textTransform: 'uppercase' }}
+          style={{
+            fontSize: '0.7rem',
+            fontFamily: 'var(--font-mono)',
+            color: 'var(--text-muted)',
+          }}
         >
-          Click Node to Inspect
+          Hover node to inspect
         </span>
       </div>
 
-      {/* Nodes Stepper Ribbon */}
+      {/* Living Interactive Pipeline Nodes */}
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(6, 1fr)',
-          backgroundColor: 'var(--bg-surface)',
-          borderBottom: '1px solid var(--border-subtle)',
-          overflowX: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--space-2)',
+          position: 'relative',
         }}
-        className="pipeline-nodes-bar"
       >
-        {PIPELINE_STAGES.map((stage) => {
-          const isSelected = stage.id === activeStageId;
+        {nodes.map((node, index) => {
+          const isActive = node.id === activeNodeId;
+          const isLast = index === nodes.length - 1;
+
           return (
-            <button
-              key={stage.id}
-              onClick={() => setActiveStageId(stage.id)}
-              onMouseEnter={() => setActiveStageId(stage.id)}
-              aria-label={`Inspect ${stage.title}`}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: 'var(--space-4) var(--space-2)',
-                backgroundColor: isSelected ? 'var(--accent-primary-subtle)' : 'transparent',
-                borderBottom: isSelected ? '3px solid var(--accent-primary)' : '3px solid transparent',
-                borderRight: '1px solid var(--border-subtle)',
-                transition: 'all 200ms ease',
-                cursor: 'pointer',
-                textAlign: 'center',
-                gap: 'var(--space-1)',
-              }}
-            >
+            <div key={node.id} style={{ position: 'relative' }}>
               <div
+                onMouseEnter={() => setActiveNodeId(node.id)}
+                onClick={() => setActiveNodeId(node.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveNodeId(node.id); }}
                 style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: isSelected ? 'var(--accent-primary)' : 'var(--bg-surface-subtle)',
-                  color: isSelected ? '#ffffff' : 'var(--text-secondary)',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 200ms ease',
+                  justifyContent: 'space-between',
+                  padding: 'var(--space-3) var(--space-4)',
+                  borderRadius: 'var(--radius-md)',
+                  backgroundColor: isActive
+                    ? 'var(--bg-surface)'
+                    : 'transparent',
+                  border: isActive
+                    ? '1px solid var(--border-medium)'
+                    : '1px solid var(--border-hairline)',
+                  boxShadow: isActive ? 'var(--shadow-md)' : 'none',
+                  cursor: 'pointer',
+                  transition: 'all 200ms cubic-bezier(0.16, 1, 0.3, 1)',
+                  position: 'relative',
+                  zIndex: 2,
                 }}
+                className="pipeline-node-strip"
               >
-                {getStageIcon(stage.id, 16)}
+                {/* Node Number & Icon & Title */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
+                  <span
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
+                      width: '20px',
+                    }}
+                  >
+                    {node.stepNumber}
+                  </span>
+
+                  <div
+                    style={{
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: 'var(--radius-sm)',
+                      backgroundColor: isActive
+                        ? 'var(--accent-primary-subtle)'
+                        : 'var(--bg-surface-subtle)',
+                      color: isActive ? 'var(--accent-primary)' : 'var(--text-tertiary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 200ms ease',
+                    }}
+                  >
+                    {node.icon}
+                  </div>
+
+                  <div>
+                    <div
+                      style={{
+                        fontSize: '0.92rem',
+                        fontWeight: isActive ? 700 : 600,
+                        color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {node.title}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right context pill */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontFamily: 'var(--font-mono)',
+                      padding: '0.2rem 0.55rem',
+                      borderRadius: 'var(--radius-xs)',
+                      backgroundColor: isActive
+                        ? 'var(--accent-primary-subtle)'
+                        : 'var(--bg-surface-subtle)',
+                      color: isActive
+                        ? 'var(--accent-primary)'
+                        : 'var(--text-muted)',
+                      transition: 'all 200ms ease',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    &rarr; {node.microSummary}
+                  </span>
+                </div>
               </div>
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  fontWeight: isSelected ? 700 : 500,
-                  color: isSelected ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                  lineHeight: 1.2,
-                  marginTop: '2px',
-                }}
-              >
-                {stage.shortTitle}
-              </span>
-              <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                {stage.stepNumber}
-              </span>
-            </button>
+
+              {/* Connecting animated conduit line between nodes */}
+              {!isLast && (
+                <div
+                  style={{
+                    height: '8px',
+                    width: '2px',
+                    backgroundColor: isActive ? 'var(--accent-primary)' : 'var(--border-medium)',
+                    marginLeft: '44px',
+                    transition: 'background-color 200ms ease',
+                    position: 'relative',
+                  }}
+                />
+              )}
+            </div>
           );
         })}
       </div>
 
-      {/* Active Stage Telemetry Panel */}
-      <div style={{ padding: 'var(--space-6)', backgroundColor: 'var(--bg-surface)' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-4)', marginBottom: 'var(--space-4)' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-1)' }}>
-              <span className="badge badge-subtle font-mono">STAGE {activeStage.stepNumber}</span>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-tertiary)' }}>{activeStage.scientificReference}</span>
-            </div>
-            <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-              {activeStage.title}
-            </h3>
-          </div>
-          <div
-            style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'var(--bg-surface-subtle)',
-              border: '1px solid var(--border-subtle)',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              color: 'var(--accent-primary)',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Live Simulation Ready
-          </div>
-        </div>
-
-        <p style={{ fontSize: '0.92rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 'var(--space-6)' }}>
-          {activeStage.description}
-        </p>
-
-        {/* Live Metrics Grid for this node */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 'var(--space-3)',
-            marginBottom: 'var(--space-5)',
-          }}
-          className="stage-metrics-grid"
-        >
-          {activeStage.sampleMetrics.map((metric, i) => (
-            <div
-              key={i}
+      {/* Floating Active Node Telemetry Capsule (Compact & Elegant, not a giant card) */}
+      <div
+        style={{
+          marginTop: 'var(--space-4)',
+          padding: 'var(--space-4) var(--space-5)',
+          backgroundColor: 'var(--bg-surface)',
+          borderRadius: 'var(--radius-md)',
+          border: '1px solid var(--border-medium)',
+          boxShadow: 'var(--shadow-sm)',
+          transition: 'all 200ms ease',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-1)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+            <span
               style={{
-                padding: 'var(--space-3)',
-                borderRadius: 'var(--radius-md)',
-                backgroundColor: 'var(--bg-surface-subtle)',
-                border: '1px solid var(--border-subtle)',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                color: 'var(--accent-primary)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
               }}
             >
-              <div style={{ fontSize: '0.72rem', fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-tertiary)', letterSpacing: '0.04em' }}>
-                {metric.label}
-              </div>
-              <div style={{ fontSize: '1.35rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '2px' }} className="font-mono">
-                {metric.value}
-              </div>
-              {metric.unit && (
-                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-                  {metric.unit}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Standardized Schema Tags */}
-        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 'var(--space-4)' }}>
-          <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 'var(--space-2)' }}>
-            Associated Feature Schema:
+              STAGE {activeNode.stepNumber} INSIGHT
+            </span>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
-            {activeStage.schemaFields.map((field, idx) => (
-              <span
-                key={idx}
-                style={{
-                  fontSize: '0.75rem',
-                  fontFamily: 'var(--font-mono)',
-                  padding: '0.2rem 0.55rem',
-                  borderRadius: 'var(--radius-xs)',
-                  backgroundColor: 'var(--bg-surface-subtle)',
-                  color: 'var(--text-secondary)',
-                  border: '1px solid var(--border-subtle)',
-                }}
-              >
-                {field}
-              </span>
-            ))}
-          </div>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            {activeNode.sampleMetric}
+          </span>
         </div>
+        <p
+          style={{
+            fontSize: '0.86rem',
+            color: 'var(--text-secondary)',
+            lineHeight: 1.5,
+            margin: 0,
+          }}
+        >
+          {activeNode.detail}
+        </p>
       </div>
 
       <style>{`
-        @media (max-width: 640px) {
-          .pipeline-nodes-bar {
-            grid-template-columns: repeat(3, 1fr) !important;
-          }
-          .stage-metrics-grid {
-            grid-template-columns: 1fr !important;
-          }
+        .pipeline-node-strip:hover {
+          background-color: var(--bg-surface) !important;
+          border-color: var(--border-medium) !important;
         }
       `}</style>
-    </GlassPanel>
+    </div>
   );
 };

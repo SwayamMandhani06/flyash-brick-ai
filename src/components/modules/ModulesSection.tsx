@@ -1,152 +1,146 @@
 import React from 'react';
-import { SectionHeading } from '../common/SectionHeading';
-import { ModuleCard } from './ModuleCard';
-import { BookOpen, Database, Cpu, Sliders, CheckCircle2, Sparkles, Compass } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { BookOpen, Database, Cpu, Sliders } from 'lucide-react';
 
 export const ModulesSection: React.FC = () => {
   return (
-    <section className="section" style={{ backgroundColor: 'var(--bg-app)' }}>
+    <section className="section" style={{ backgroundColor: 'var(--bg-app)', borderBottom: '1px solid var(--border-hairline)' }}>
       <div className="container">
-        <SectionHeading
-          badge="03 / CORE SYSTEM MODULES"
-          badgeVariant="teal"
-          title="Four Specialized Engines Powering the Research Framework"
-          highlightWords={['Four Specialized Engines', 'Research Framework']}
-          description="Designed as modular, interoperable computational layers that take materials research from unstructured PDF literature to factory-floor batching."
-          align="left"
-        />
+        {/* Section Header */}
+        <div style={{ marginBottom: 'var(--space-12)' }}>
+          <div className="editorial-eyebrow" style={{ marginBottom: 'var(--space-2)' }}>
+            System Architecture &bull; 4 Modular Computational Layers
+          </div>
+          <h2 style={{ fontSize: 'clamp(1.85rem, 3vw + 0.5rem, 2.6rem)', fontWeight: 800, letterSpacing: '-0.03em', color: 'var(--text-primary)' }}>
+            The Four Platform Engines
+          </h2>
+          <p style={{ fontSize: '1rem', color: 'var(--text-secondary)', maxWidth: '640px', marginTop: 'var(--space-2)' }}>
+            A modular pipeline designed to solve data fragmentation, predict physical performance, and optimize industrial production parameters.
+          </p>
+        </div>
 
+        {/* 2-Pillar Editorial Architecture (Data Foundation vs AI Optimization) */}
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: 'var(--space-6)',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+            gap: 'var(--space-8)',
           }}
+          className="modules-editorial-grid"
         >
-          {/* Module 01: Literature Intelligence */}
-          <ModuleCard
-            number="01"
-            title="Literature Intelligence"
-            tagline="Automated Document Extraction"
-            description="Ingests empirical research PDFs, parses heterogeneous data tables, and converts published experimental mixes into clean structured records."
-            icon={<BookOpen size={22} />}
-            accentColor="emerald"
-            linkTo="/platform/extraction"
-            features={[
-              'Multi-column scientific table detection',
-              'Raw chemical notation parsing (wt%, g/kg)',
-              'Extraction confidence telemetry scores',
-            ]}
-            previewElement={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--text-tertiary)' }}>
-                  <span>PDF Parser:</span>
-                  <span className="badge badge-emerald font-mono" style={{ fontSize: '0.65rem' }}>Active</span>
-                </div>
-                <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)', fontFamily: 'var(--font-mono)' }}>
-                  [Table 2] Mix: FA 65% + Lime 18% + Gyp 5%
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-primary)', fontSize: '0.72rem' }}>
-                  <CheckCircle2 size={12} />
-                  <span>380 experimental rows extracted</span>
-                </div>
-              </div>
-            }
-          />
+          {/* Pillar 1: Data Foundation (Engines 01 & 02) */}
+          <div
+            style={{
+              padding: 'var(--space-8)',
+              backgroundColor: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border-medium)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-3)', borderBottom: '1px solid var(--border-hairline)' }}>
+              <span className="editorial-eyebrow">PHASE I &bull; DATA FOUNDATION</span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Engines 01 &amp; 02</span>
+            </div>
 
-          {/* Module 02: Dataset Intelligence */}
-          <ModuleCard
-            number="02"
-            title="Dataset Intelligence"
-            tagline="Standardization & Validation"
-            description="Enforces strict stoichiometric sum checks (100% dry basis), filters anomalous testing entries, and verifies compliance against IS 12894:2002."
-            icon={<Database size={22} />}
-            accentColor="teal"
-            linkTo="/platform/dataset"
-            features={[
-              'IS 3812:2013 chemical mass balances',
-              'Outlier & incomplete data flagger',
-              'Open benchmark CSV & JSON export',
-            ]}
-            previewElement={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--text-tertiary)' }}>
-                  <span>Benchmark Corpus:</span>
-                  <span className="badge badge-teal font-mono" style={{ fontSize: '0.65rem' }}>IS 12894</span>
+            {/* Engine 01 */}
+            <div style={{ marginBottom: 'var(--space-8)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--accent-primary-subtle)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <BookOpen size={18} />
                 </div>
-                <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)', fontFamily: 'var(--font-mono)' }}>
-                  Record UID: FA-BENCH-08 • 28D Water Cure
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-success)', fontSize: '0.72rem' }}>
-                  <CheckCircle2 size={12} />
-                  <span>100% Mass balance verified</span>
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ENGINE 01</div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Literature Data Extraction</h3>
                 </div>
               </div>
-            }
-          />
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 'var(--space-3)' }}>
+                Ingests empirical PDF papers, parses multi-column mix tables via bounding-box OCR heuristics, and standardizes multi-author terminology into structured records.
+              </p>
+              <Link to="/platform/extraction" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
+                Open Extraction Workbench &rarr;
+              </Link>
+            </div>
 
-          {/* Module 03: Quality Prediction */}
-          <ModuleCard
-            number="03"
-            title="Quality Prediction"
-            tagline="Adaptive AI Modeling"
-            description="Multi-target ensemble regressors map constituent ratios and curing age into instant predictions for 28-day compressive strength and water absorption."
-            icon={<Cpu size={22} />}
-            accentColor="amber"
-            linkTo="/platform/prediction"
-            features={[
-              'Dual-target prediction (MPa + % Absorption)',
-              'IS 12894 strength grade classification',
-              'Constituent sensitivity feedback',
-            ]}
-            previewElement={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--text-tertiary)' }}>
-                  <span>Surrogate Model:</span>
-                  <span className="badge badge-amber font-mono" style={{ fontSize: '0.65rem' }}>Ensemble</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)', fontFamily: 'var(--font-mono)' }}>
-                  <span>Strength: <strong>16.8 MPa</strong></span>
-                  <span>Abs: <strong>11.9%</strong></span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-mineral)', fontSize: '0.72rem' }}>
-                  <Sparkles size={12} />
-                  <span>Class 15 structural masonry grade</span>
-                </div>
-              </div>
-            }
-          />
+            <div className="hairline-divider" style={{ margin: 'var(--space-4) 0' }} />
 
-          {/* Module 04: Manufacturing Optimization */}
-          <ModuleCard
-            number="04"
-            title="Mix Optimization"
-            tagline="Constrained Decision Engine"
-            description="Discovers the optimal trade-off between maximizing industrial fly ash content, minimizing expensive cement, and meeting target strength specifications."
-            icon={<Sliders size={22} />}
-            accentColor="blue"
-            linkTo="/platform/optimization"
-            features={[
-              'Multi-objective Pareto frontier solver',
-              'Embodied carbon minimization index',
-              'Automated plant batch sheet generation',
-            ]}
-            previewElement={
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', color: 'var(--text-tertiary)' }}>
-                  <span>Pareto Search:</span>
-                  <span className="badge badge-subtle font-mono" style={{ fontSize: '0.65rem' }}>Feasible</span>
+            {/* Engine 02 */}
+            <div style={{ marginTop: 'var(--space-4)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--accent-secondary-subtle)', color: 'var(--accent-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Database size={18} />
                 </div>
-                <div style={{ padding: '6px 8px', backgroundColor: 'var(--bg-surface)', borderRadius: 'var(--radius-xs)', border: '1px solid var(--border-subtle)', fontFamily: 'var(--font-mono)' }}>
-                  Recommended: 65% FA • 0% OPC • 18% Lime
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--status-info)', fontSize: '0.72rem' }}>
-                  <Compass size={12} />
-                  <span>78% CO₂ reduction vs red clay</span>
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ENGINE 02</div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Benchmark Dataset &amp; Validator</h3>
                 </div>
               </div>
-            }
-          />
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 'var(--space-3)' }}>
+                Enforces chemical mass balance checks (100% dry solid sum), identifies testing outliers, and standardizes feature vectors according to IS 12894:2002 guidelines.
+              </p>
+              <Link to="/platform/dataset" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-secondary)' }}>
+                Explore Standardized Dataset &rarr;
+              </Link>
+            </div>
+          </div>
+
+          {/* Pillar 2: Intelligence & Optimization (Engines 03 & 04) */}
+          <div
+            style={{
+              padding: 'var(--space-8)',
+              backgroundColor: 'var(--bg-surface)',
+              borderRadius: 'var(--radius-lg)',
+              border: '1px solid var(--border-medium)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-6)', paddingBottom: 'var(--space-3)', borderBottom: '1px solid var(--border-hairline)' }}>
+              <span className="editorial-eyebrow">PHASE II &bull; MODELING &amp; DECISION</span>
+              <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>Engines 03 &amp; 04</span>
+            </div>
+
+            {/* Engine 03 */}
+            <div style={{ marginBottom: 'var(--space-8)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--accent-mineral-subtle)', color: 'var(--accent-mineral)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Cpu size={18} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ENGINE 03</div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Adaptive AI Quality Prediction</h3>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 'var(--space-3)' }}>
+                Multi-output surrogate models trained on empirical records to forecast 28-day Compressive Strength (MPa) and 24-hour Water Absorption (%) simultaneously.
+              </p>
+              <Link to="/platform/prediction" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-mineral)' }}>
+                Open Prediction Laboratory &rarr;
+              </Link>
+            </div>
+
+            <div className="hairline-divider" style={{ margin: 'var(--space-4) 0' }} />
+
+            {/* Engine 04 */}
+            <div style={{ marginTop: 'var(--space-4)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-2)' }}>
+                <div style={{ width: '34px', height: '34px', borderRadius: 'var(--radius-sm)', backgroundColor: 'var(--accent-primary-subtle)', color: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Sliders size={18} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>ENGINE 04</div>
+                  <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-primary)' }}>Manufacturing Mix Optimizer</h3>
+                </div>
+              </div>
+              <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', lineHeight: 1.6, marginBottom: 'var(--space-3)' }}>
+                Constrained Pareto multi-objective search maximizing fly ash utilization while guaranteeing structural building code requirements and minimizing carbon footprint.
+              </p>
+              <Link to="/platform/optimization" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.82rem', fontWeight: 600, color: 'var(--accent-primary)' }}>
+                Launch Manufacturing Optimizer &rarr;
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

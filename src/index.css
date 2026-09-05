@@ -54,18 +54,19 @@
   --color-scheme: light;
 
   /* Backgrounds */
-  --bg-app: #F7F8F5;
+  --bg-app: #F8F9F6;
   --bg-surface: #FFFFFF;
   --bg-surface-elevated: #FFFFFF;
-  --bg-surface-subtle: #F0F2ED;
-  --bg-surface-translucent: rgba(255, 255, 255, 0.82);
+  --bg-surface-subtle: #F1F3EE;
+  --bg-surface-translucent: rgba(255, 255, 255, 0.88);
   --bg-overlay: rgba(15, 23, 42, 0.45);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(15, 23, 42, 0.07);
+  --border-hairline: rgba(15, 23, 42, 0.05);
+  --border-subtle: rgba(15, 23, 42, 0.08);
   --border-medium: rgba(15, 23, 42, 0.14);
   --border-strong: rgba(15, 23, 42, 0.28);
-  --border-accent: rgba(22, 101, 52, 0.35);
+  --border-accent: rgba(22, 101, 52, 0.28);
 
   /* Typography */
   --text-primary: #0F172A;
@@ -78,19 +79,19 @@
   --accent-primary: #166534;
   --accent-primary-hover: #14532D;
   --accent-primary-light: #DCFCE7;
-  --accent-primary-subtle: rgba(22, 101, 52, 0.08);
+  --accent-primary-subtle: rgba(22, 101, 52, 0.06);
 
   /* Secondary Brand: Precision Technical Teal */
   --accent-secondary: #0D9488;
   --accent-secondary-hover: #0F766E;
   --accent-secondary-light: #CCFBF1;
-  --accent-secondary-subtle: rgba(13, 148, 136, 0.08);
+  --accent-secondary-subtle: rgba(13, 148, 136, 0.06);
 
   /* Warm Mineral Tone: Calcined Lime / Gypsum Amber */
   --accent-mineral: #B45309;
   --accent-mineral-hover: #92400E;
   --accent-mineral-light: #FEF3C7;
-  --accent-mineral-subtle: rgba(180, 83, 9, 0.08);
+  --accent-mineral-subtle: rgba(180, 83, 9, 0.06);
 
   /* Status Colors */
   --status-success: #15803D;
@@ -103,14 +104,14 @@
   --status-info-bg: #E0F2FE;
 
   /* Elevation Shadows */
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
-  --shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
-  --shadow-xl: 0 20px 40px -8px rgba(15, 23, 42, 0.12), 0 8px 16px -4px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.02);
+  --shadow-lg: 0 12px 28px -4px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  --shadow-xl: 0 20px 40px -8px rgba(15, 23, 42, 0.09), 0 8px 16px -4px rgba(15, 23, 42, 0.04);
 
   /* Technical Grid Pattern */
-  --grid-line-color: rgba(15, 23, 42, 0.035);
-  --glow-subtle: rgba(22, 101, 52, 0.06);
+  --grid-line-color: rgba(15, 23, 42, 0.028);
+  --glow-subtle: rgba(22, 101, 52, 0.04);
 }
 
 /* ==========================================================================
@@ -120,43 +121,44 @@
   --color-scheme: dark;
 
   /* Backgrounds */
-  --bg-app: #0A0E12;
-  --bg-surface: #12181F;
-  --bg-surface-elevated: #18222C;
-  --bg-surface-subtle: #1C2632;
-  --bg-surface-translucent: rgba(18, 24, 31, 0.82);
-  --bg-overlay: rgba(0, 0, 0, 0.7);
+  --bg-app: #0B0F13;
+  --bg-surface: #12171E;
+  --bg-surface-elevated: #17202A;
+  --bg-surface-subtle: #1A232E;
+  --bg-surface-translucent: rgba(18, 23, 30, 0.88);
+  --bg-overlay: rgba(0, 0, 0, 0.72);
 
   /* Borders & Dividers */
+  --border-hairline: rgba(255, 255, 255, 0.05);
   --border-subtle: rgba(255, 255, 255, 0.07);
-  --border-medium: rgba(255, 255, 255, 0.13);
-  --border-strong: rgba(255, 255, 255, 0.24);
-  --border-accent: rgba(16, 185, 129, 0.35);
+  --border-medium: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.22);
+  --border-accent: rgba(16, 185, 129, 0.28);
 
   /* Typography */
-  --text-primary: #F3F4F6;
+  --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
   --text-tertiary: #64748B;
   --text-muted: #475569;
-  --text-inverse: #0A0E12;
+  --text-inverse: #0B0F13;
 
   /* Primary Brand: Crisp Emerald */
   --accent-primary: #10B981;
   --accent-primary-hover: #34D399;
   --accent-primary-light: rgba(16, 185, 129, 0.15);
-  --accent-primary-subtle: rgba(16, 185, 129, 0.1);
+  --accent-primary-subtle: rgba(16, 185, 129, 0.08);
 
   /* Secondary Brand: Precision Cyan/Teal */
   --accent-secondary: #14B8A6;
   --accent-secondary-hover: #2DD4BF;
   --accent-secondary-light: rgba(20, 184, 166, 0.15);
-  --accent-secondary-subtle: rgba(20, 184, 166, 0.1);
+  --accent-secondary-subtle: rgba(20, 184, 166, 0.08);
 
   /* Warm Mineral Highlight: Calcined Amber */
   --accent-mineral: #F59E0B;
   --accent-mineral-hover: #FBBF24;
   --accent-mineral-light: rgba(245, 158, 11, 0.15);
-  --accent-mineral-subtle: rgba(245, 158, 11, 0.1);
+  --accent-mineral-subtle: rgba(245, 158, 11, 0.08);
 
   /* Status Colors */
   --status-success: #34D399;
@@ -169,14 +171,14 @@
   --status-info-bg: rgba(56, 189, 248, 0.12);
 
   /* Elevation Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
-  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.48);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.6);
 
   /* Technical Grid Pattern */
-  --grid-line-color: rgba(255, 255, 255, 0.025);
-  --glow-subtle: rgba(16, 185, 129, 0.05);
+  --grid-line-color: rgba(255, 255, 255, 0.022);
+  --glow-subtle: rgba(16, 185, 129, 0.035);
 }
 
 /* ==========================================================================
@@ -403,3 +405,74 @@ input, select, textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
 }
+
+/* ==========================================================================
+   EDITORIAL & SCIENTIFIC WORKSTATION UTILITIES
+   ========================================================================== */
+.editorial-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  user-select: none;
+}
+
+.editorial-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+}
+
+.hairline-divider {
+  width: 100%;
+  height: 1px;
+  background-color: var(--border-hairline);
+  margin: var(--space-8) 0;
+  border: none;
+}
+
+.technical-data-callout {
+  padding: var(--space-4) var(--space-5);
+  border-left: 2px solid var(--accent-primary);
+  background-color: var(--bg-surface-subtle);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+/* Pipeline Flow Animation */
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.animated-conduit-line {
+  stroke-dasharray: 4, 4;
+  animation: flowDash 1.2s linear infinite;
+}
+
+/* Staggered entrance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.1s both; }
+.stagger-2 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.2s both; }
+.stagger-3 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.3s both; }
+.stagger-4 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.4s both; }
