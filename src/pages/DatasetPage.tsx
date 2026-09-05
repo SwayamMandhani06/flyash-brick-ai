@@ -6,6 +6,7 @@ import { RecordDetailModal } from '../components/dataset/RecordDetailModal';
 import { ScatterPlotVisualizer } from '../components/dataset/ScatterPlotVisualizer';
 import { Download, Search, Eye, ArrowUpDown, Table, Activity } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const DatasetPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -332,6 +333,17 @@ export const DatasetPage: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            {filteredData.length === 0 && (
+              <EmptyState
+                title="No Matching Formulations Found"
+                description={`No literature mixes matched query "${searchQuery}" under ${curingFilter === 'all' ? 'all curing durations' : `${curingFilter}-day curing`}.`}
+                actionLabel="Reset Search Filters"
+                onAction={() => {
+                  setSearchQuery('');
+                  setCuringFilter('all');
+                }}
+              />
+            )}
           </div>
         </>
       )}

@@ -22,7 +22,7 @@ interface ParetoConvergenceVisualizerProps {
 }
 
 // Fixed representative candidate population generated from empirical parameter bounds
-export const CANDIDATE_POPULATION: ParetoPoint[] = [
+const CANDIDATE_POPULATION: ParetoPoint[] = [
   // Pareto frontier (optimal trade-offs)
   { id: 'OPT-01', name: 'Balanced FaL-G (Recommended)', flyAsh: 65, strength: 17.2, absorption: 11.2, cost: 3.40, co2Reduction: '88%', isPareto: true, isFeasible: true },
   { id: 'OPT-02', name: 'Ultra High-Volume FA', flyAsh: 72, strength: 15.1, absorption: 11.9, cost: 3.10, co2Reduction: '93%', isPareto: true, isFeasible: true },

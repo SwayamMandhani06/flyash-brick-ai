@@ -476,3 +476,45 @@ input, select, textarea {
 .stagger-2 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.2s both; }
 .stagger-3 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.3s both; }
 .stagger-4 { animation: fadeInUp 0.5s var(--ease-out-quint) 0.4s both; }
+
+/* ==========================================================================
+   Accessibility & Usability
+   ========================================================================== */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Responsive Table Touch Scrolling */
+.table-responsive-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Reduced Motion Override */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animated-conduit-line,
+  .animate-pulse-subtle,
+  .skeleton-shimmer::after {
+    animation: none !important;
+  }
+}
+

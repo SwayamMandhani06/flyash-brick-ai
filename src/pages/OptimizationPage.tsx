@@ -80,8 +80,49 @@ export const OptimizationPage: React.FC = () => {
 
   const currentMix = candidates.find((c) => c.id === selectedMixId) || candidates[0];
 
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
+
   const handleSelectFromPlot = (pt: ParetoPoint) => {
     setSelectedMixId(pt.id);
+  };
+
+  const handleExportBatchSheet = () => {
+    const sheetData = `=====================================================
+FLYASH INTEL — FACTORY PAN MIXER PRESCRIPTION (DEMO)
+Specification Standard: IS 12894:2002
+=====================================================
+Mix Formulation ID: ${currentMix.id} (${currentMix.title})
+Target Compressive Strength: ≥ ${minStrength} MPa
+Maximum Water Absorption: ≤ ${maxAbsorption}%
+Objective Strategy: ${objective}
+
+BATCH PROPORTIONS (Per 500 Bricks - Modular 230x110x70mm):
+- Class F Fly Ash: ${currentMix.flyAsh}% (${Math.round(currentMix.flyAsh * 11.8)} kg)
+- Hydrated Lime:    ${currentMix.lime}% (${Math.round(currentMix.lime * 11.8)} kg)
+- Phospho-Gypsum:   ${currentMix.gypsum}% (${Math.round(currentMix.gypsum * 11.8)} kg)
+- OPC Clinker:      ${currentMix.cement}% (${Math.round(currentMix.cement * 11.8)} kg)
+- Sand/Stone Dust:  ${currentMix.sand}% (${Math.round(currentMix.sand * 11.8)} kg)
+- Water Dosage:     165 Liters (W/B = 0.14)
+
+PREDICTED PERFORMANCE:
+- 28-Day Strength:  ${currentMix.str} MPa
+- Water Absorption: ${currentMix.abs}%
+- Embodied CO2:     ${currentMix.co2}
+- Estimated Cost:   ${currentMix.cost}
+=====================================================`;
+
+    const blob = new Blob([sheetData], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `FlyAsh_BatchSheet_${currentMix.id}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    setExportNotice(`Batch sheet for ${currentMix.id} downloaded successfully.`);
+    setTimeout(() => setExportNotice(null), 4000);
   };
 
   return (
@@ -95,13 +136,40 @@ export const OptimizationPage: React.FC = () => {
             variant="outline"
             size="sm"
             icon={<Download size={14} />}
-            onClick={() => alert('Batch prescription exported to printable PDF sheet (demo).')}
+            onClick={handleExportBatchSheet}
           >
             Export Batch Sheet
           </Button>
         </div>
       }
     >
+      {exportNotice && (
+        <div
+          style={{
+            padding: 'var(--space-3) var(--space-4)',
+            backgroundColor: 'var(--status-success-bg)',
+            border: '1px solid var(--status-success)',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: 'var(--space-4)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.82rem',
+            color: 'var(--text-primary)',
+          }}
+        >
+          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CheckCircle2 size={16} color="var(--status-success)" />
+            {exportNotice}
+          </span>
+          <button
+            onClick={() => setExportNotice(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+          >
+            &times;
+          </button>
+        </div>
+      )}
       {/* Top Workstation Status Strip */}
       <div
         style={{

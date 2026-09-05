@@ -17,13 +17,17 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
   suffix = '',
   className = '',
 }) => {
-  const [count, setCount] = useState<number>(0);
+  const [count, setCount] = useState<number>(() => {
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+      return end;
+    }
+    return 0;
+  });
 
   useEffect(() => {
     // Check if user prefers reduced motion
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const prefersReducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) {
-      setCount(end);
       return;
     }
 
