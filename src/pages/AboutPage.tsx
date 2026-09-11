@@ -77,6 +77,46 @@ export const AboutPage: React.FC = () => {
             </p>
           </GlassPanel>
         </div>
+
+        {/* Project Research Team */}
+        <div style={{ marginTop: 'var(--space-12)' }}>
+          <div style={{ marginBottom: 'var(--space-6)' }}>
+            <span className="editorial-eyebrow">RESEARCH COLLABORATORS</span>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)', marginTop: '4px' }}>
+              Project Team
+            </h3>
+            <p style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
+              Department of Computer Engineering &bull; B.Tech Capstone Research Group
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: 'var(--space-4)',
+            }}
+          >
+            {[
+              { name: 'Swayam Mandhani', role: 'Applied ML & Platform Architecture' },
+              { name: 'Pruthviraj Mule', role: 'Data Engineering & Optimization' },
+              { name: 'Khush Paliwal', role: 'ML Modeling & Evaluation' },
+              { name: 'Rohan Mungse', role: 'Pipeline Ingestion & UI/UX Engineering' },
+            ].map((member) => (
+              <GlassPanel key={member.name} padding="md" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                  {member.name}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
+                  {member.role}
+                </div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-tertiary)', marginTop: '2px' }}>
+                  B.Tech Computer Engineering
+                </div>
+              </GlassPanel>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

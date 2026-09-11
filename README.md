@@ -1,43 +1,79 @@
 # FlyAsh Intel
 
-**AI-Driven Intelligent Benchmark Dataset and Adaptive Optimization Framework for Sustainable Fly Ash Brick Manufacturing**
+<div align="center">
 
-An academic research platform designed to transform fragmented fly ash brick literature into a standardized benchmark corpus, support multi-target predictive quality analysis, and formulate constrained manufacturing mix recommendations.
+### AI-Driven Intelligent Benchmark Dataset and Adaptive Optimization Framework for Sustainable Fly Ash Brick Manufacturing
+
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-8.2-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Standard: IS 12894](https://img.shields.io/badge/Standard-IS%2012894%3A2002-059669)](https://www.services.bis.gov.in/)
+[![UN SDG 9 & 12](https://img.shields.io/badge/UN%20SDG-9%20%7C%2012-10B981)](https://sdgs.un.org/goals)
+
+*An academic research and engineering platform designed to transform fragmented fly ash brick literature into a standardized benchmark corpus, evaluate multi-target predictive surrogate models, and optimize factory manufacturing mix formulations.*
+
+[Live Platform](#getting-started) • [Architecture](#system-architecture) • [Modules](#platform-modules) • [Dataset Schema](#benchmark-dataset-schema) • [Research Team](#project-team)
+
+</div>
+
+---
+
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Research Motivation & Background](#research-motivation--background)
+- [Core Objectives](#core-objectives)
+- [System Architecture](#system-architecture)
+- [Platform Modules](#platform-modules)
+- [Current Implementation Status](#current-implementation-status)
+- [Technology Stack](#technology-stack)
+- [Repository Structure](#repository-structure)
+- [Getting Started](#getting-started)
+- [Deployment on Vercel](#deployment-on-vercel)
+- [Environment Variables](#environment-variables)
+- [Demo Data & Prototype Disclaimers](#demo-data--prototype-disclaimers)
+- [Research Methodology](#research-methodology)
+- [Machine Learning & Optimization Direction](#machine-learning--optimization-direction)
+- [Benchmark Dataset Schema](#benchmark-dataset-schema)
+- [Research References & Standards](#research-references--standards)
+- [Academic Context & SDG Alignment](#academic-context--sdg-alignment)
+- [Project Team](#project-team)
+- [License & Intellectual Property](#license--intellectual-property)
 
 ---
 
 ## Project Overview
 
-In sustainable civil engineering and masonry manufacturing, pulverized coal fly ash serves as a critical industrial byproduct substitute for clay topsoil and carbon-intensive Portland cement. However, broad industrial adoption is hindered by significant challenges:
+In civil engineering and sustainable construction materials, pulverized coal fly ash serves as a critical industrial byproduct substitute for clay topsoil and carbon-intensive Portland cement. However, broad industrial adoption is hindered by significant practical challenges:
 
-- **Raw-Material Variability**: Fly ash characteristics (chemical composition, amorphous reactive silica, unburnt carbon loss-on-ignition, fineness) vary widely depending on coal sources and thermal power plant combustion conditions.
-- **Fragmented Literature**: Experimental findings on fly ash-lime-gypsum (FaL-G) and hybrid alkali-activated formulations are scattered across hundreds of independent academic publications with disparate batch reporting units (dry weight fractions, mass per volume, water-to-binder ratios).
-- **Trial-and-Error Mix Design**: Brick manufacturers typically rely on ad-hoc, empirical proportioning, resulting in variable 28-day compressive strengths and high water absorption rates that risk structural non-conformance under building codes.
+- **Raw-Material Variability**: Fly ash characteristics (amorphous reactive silica, unburnt carbon loss-on-ignition, calcium oxide content, fineness) vary substantially across thermal power plant sources and combustion batches.
+- **Fragmented Research Literature**: Decades of experimental laboratory studies on fly ash-lime-gypsum (FaL-G) and hybrid alkali-activated formulations remain trapped in unstructured PDF tables with non-uniform reporting notations (dry weight fractions, mass per batch, volumetric ratios).
+- **Trial-and-Error Mix Design**: Brick manufacturing plants typically rely on empirical rules-of-thumb, resulting in unpredictable 28-day compressive strength and high water absorption rates that risk structural non-conformance under building standards.
 
-**FlyAsh Intel** addresses these challenges by developing an end-to-end computational pipeline: extracting empirical research data, standardizing it into a canonical benchmark dataset, training multi-output machine learning models to forecast physical performance, and applying multi-objective evolutionary optimization to recommend factory-viable batching recipes.
+**FlyAsh Intel** addresses these challenges through an integrated computational workflow: extracting empirical research records from publications, standardizing them into a canonical benchmark dataset, utilizing surrogate predictive models to forecast mechanical behavior, and applying multi-objective Pareto optimization to prescribe factory-feasible batching recipes.
 
 ---
 
-## Research Motivation
+## Research Motivation & Background
 
-Traditional fired clay brick production depletes millions of tonnes of fertile agricultural topsoil annually and consumes vast amounts of fossil fuel in kilns, emitting substantial greenhouse gases and particulate matter. While fly ash bricks offer a zero-clinker or low-carbon alternative, manufacturers face persistent quality control hurdles:
+Conventional fired clay brick manufacturing consumes billions of tonnes of fertile agricultural topsoil annually and burns vast quantities of coal in traditional kilns, emitting substantial greenhouse gases ($CO_2$) and particulate air pollution. While fly ash bricks offer a zero-clinker or low-carbon alternative, industrial manufacturers face recurring quality-control bottlenecks:
 
-1. **Inconsistent Raw Materials**: Variations between Class F and Class C pozzolans alter ambient hydration kinetics.
-2. **Data Sparsity & Inconsistency**: Lack of an open, standardized benchmark dataset hampers rigorous data-driven modeling.
-3. **Multi-Objective Trade-Offs**: Maximizing industrial waste utilization often conflicts with early handling strength and water impermeability limits.
+1. **Inconsistent Pozzolanic Reactivity**: Differences between Class F (low-calcium) and Class C (high-calcium) fly ash change ambient hydration kinetics and setting times.
+2. **Data Sparsity & Lack of Unified Baselines**: Civil engineering lacks an open-access, standardized benchmark dataset for computational machine learning benchmarks in masonry units.
+3. **Multi-Objective Trade-Offs**: Maximizing industrial ash utilization often conflicts with demolding strength requirements, water permeability thresholds, and material costs.
 
-This platform bridges materials informatics and software engineering to provide actionable decision support for sustainable masonry production.
+FlyAsh Intel bridges materials informatics with modern software engineering to provide systematic, data-driven decision support for sustainable masonry production.
 
 ---
 
 ## Core Objectives
 
-In accordance with the approved research project synopsis, the core objectives are:
+In accordance with the approved research project synopsis, the platform pursues four central objectives:
 
-1. **AI-Assisted Data Extraction & Standardization**: Develop an intelligent ingestion pipeline that extracts experimental mix designs, chemical compositions, and mechanical test results from unstructured academic papers and normalizes them under canonical units.
-2. **Unified Benchmark Dataset**: Curate, validate, and version-control an open-access experimental benchmark corpus adhering to Indian Standards (IS 12894:2002 and IS 3812 Part 1) and ASTM guidelines.
-3. **Adaptive Surrogate Modeling**: Develop and evaluate multi-target machine learning regressors to forecast 28-day compressive strength and 24-hour water absorption directly from raw batch proportions.
-4. **Manufacturing Mix Optimization**: Formulate constrained Pareto optimization algorithms that synthesize cost-effective, code-conforming batch sheets maximizing fly ash utilization for factory pan mixers.
+1. **AI-Assisted Data Extraction & Standardization**: Develop an intelligent ingestion pipeline that extracts experimental mix designs, curing protocols, and mechanical test results from unstructured scientific publications and normalizes them under canonical units.
+2. **Unified Benchmark Dataset**: Curate, validate, and maintain an open-access experimental benchmark corpus adhering to Indian Standards (IS 12894:2002 and IS 3812 Part 1) and ASTM specifications.
+3. **Adaptive Surrogate Modeling**: Develop and evaluate multi-target machine learning regressors to forecast 28-day compressive strength and 24-hour water absorption directly from raw constituent proportions.
+4. **Manufacturing Mix Optimization**: Formulate constrained Pareto optimization algorithms that synthesize cost-effective, code-conforming batch sheets maximizing fly ash utilization for plant pan mixers.
 
 ---
 
@@ -54,20 +90,20 @@ flowchart TD
         F --> G[Plant Batch Prescription & Decision Support]
     end
 
-    subgraph SoftwareArchitecture ["Software Implementation Architecture"]
+    subgraph SoftwareArchitecture ["Software Architecture & Decoupling"]
         UI[Frontend UI / Workstation Suite<br><i>React 19 + TypeScript + Vite</i>]
         SVC[Service Abstraction Layer<br><i>src/lib/api/services.ts</i>]
-        API[API Layer<br><i>FastAPI / REST Endpoints</i>]
-        BE[Python Backend Engine<br><i>Planned ML & Optimization Modules</i>]
+        API[API Gateway / Router<br><i>FastAPI Endpoints</i>]
+        BE[Python Analytical Core<br><i>Planned ML & Optimization Modules</i>]
 
         UI --> SVC
-        SVC -.->|Development / Demo| MOCK[(Centralized Demo Data<br>src/data/demo/)]
+        SVC -.->|Development / Demo Mode| MOCK[(Centralized Demo Data<br>src/data/demo/)]
         SVC -->|Production Mode| API
         API --> BE
     end
 ```
 
-> **Implementation Note**: The frontend interface and interactive workstations are fully developed in this repository. The Python backend services, OCR table detection models, and machine learning training pipelines are planned for subsequent phases.
+> **Architecture Note**: The frontend interface, design system, and workstation prototypes are fully implemented in this repository. The Python backend services, OCR table detection models, and ML training pipelines are planned for subsequent phases. The frontend includes a formal service abstraction layer (`src/lib/api/`) ready for backend connection.
 
 ---
 
@@ -75,25 +111,23 @@ flowchart TD
 
 ### 01. Literature Data Extraction Engine
 - **Purpose**: Ingests unstructured academic PDFs, identifies experimental tabular bounding boxes, extracts constituent numerical cells, and maps heterogeneous author terminology into standardized notation.
-- **Key Concepts**: Spatial layout heuristics, OCR cell tokenization, dry mass unit normalization ($g/\text{batch}$, $\text{wt}\%$, $\text{kg}/\text{m}^3 \rightarrow \text{dry mass } \%$).
+- **Key Capabilities**: Spatial layout heuristics, OCR cell tokenization, dry mass unit normalization ($g/\text{batch}$, $\text{wt}\%$, $\text{kg}/\text{m}^3 \rightarrow \text{dry mass } \%$), and PDF layout inspection view.
 
 ### 02. Benchmark Dataset & Validator
 - **Purpose**: Curates and maintains a standardized, open-access experimental dataset with strict stoichiometric validation.
-- **Key Concepts**: 100% mass balance verification ($\sum \text{constituents} = 100.0\% \pm 0.1\%$), outlier detection, dual-view explorer (canonical table vs interactive scatter plot), and CSV export.
+- **Key Capabilities**: 100% dry mass balance verification ($\sum \text{constituents} = 100.0\% \pm 0.1\%$), outlier detection, dual-view explorer (canonical dense table vs interactive SVG scatter plot), curing duration filtering, and CSV export.
 
 ### 03. Adaptive AI Quality Prediction Workbench
 - **Purpose**: Provides real-time surrogate inference predicting 28-day Compressive Strength ($\text{MPa}$) and 24-hour Water Absorption ($\%$) from raw batch inputs.
-- **Key Concepts**: Stoichiometric slider formulation, water-to-binder ratio sensitivity, hydration kinetics curves across curing ages (3d, 7d, 14d, 28d), and building code classification.
+- **Key Capabilities**: Stoichiometric slider formulation, water-to-binder ratio sensitivity, hydration kinetics curves across curing ages (3d, 7d, 14d, 28d), and IS 12894 building code classification.
 
 ### 04. Manufacturing Mix Optimizer Workstation
-- **Purpose**: Solves multi-objective trade-offs between fly ash replacement ratio, cement clinker minimization, cost, and structural resistance.
-- **Key Concepts**: Interactive Pareto convergence frontier visualization, candidate formulation ranking, and production pan mixer batch sheets (prescribing kg per 500 modular bricks).
+- **Purpose**: Solves multi-objective trade-offs between fly ash replacement ratio, cement clinker minimization, material cost, and compressive resistance.
+- **Key Capabilities**: Interactive Pareto convergence frontier visualization, candidate formulation ranking, and production pan mixer batch sheets (prescribing kg per 500 modular bricks).
 
 ---
 
 ## Current Implementation Status
-
-The table below honestly reflects what is currently implemented in this repository versus components planned for future development:
 
 | Module / Component | Frontend UI | Backend / ML Core | Current Status |
 |---|---|---|---|
@@ -104,20 +138,21 @@ The table below honestly reflects what is currently implemented in this reposito
 | **04. Manufacturing Mix Optimizer** | Interactive Workstation | Planned (NSGA-II/DEAP) | Prototype (Pareto Frontier Simulation) |
 | **Model Explainability (SHAP)** | API Contract Ready | Planned (TreeSHAP/KernelSHAP) | Architectural Interface Ready |
 | **Theme System (Light/Dark)** | Complete | N/A | Available |
-| **API Client Service Abstraction** | Complete (`src/lib/api/`) | Planned (FastAPI Backend) | Available (`VITE_USE_MOCK_API`) |
+| **API Client Service Layer** | Complete (`src/lib/api/`) | Planned (FastAPI Backend) | Available (`VITE_USE_MOCK_API`) |
+| **Vercel SPA Deployment** | Configured (`vercel.json`) | N/A | Production Ready |
 
 ---
 
 ## Technology Stack
 
 ### Frontend Foundation
-- **Framework**: React 19 (React 19.2.8)
-- **Language**: TypeScript (TypeScript 6.0 / strict configuration)
-- **Bundler & Dev Server**: Vite (Vite 8.2.2)
-- **Routing**: React Router DOM (v7.18.3)
-- **Icons**: Lucide React (v1.41.0)
-- **Linter**: Oxlint (v1.79.0)
-- **Styling**: Vanilla CSS Design Token System with CSS Custom Properties (zero heavy CSS framework bloat, highly optimized rendering)
+- **Core Framework**: [React 19](https://react.dev/) (`react` 19.2.8, `react-dom` 19.2.8)
+- **Language**: [TypeScript](https://www.typescriptlang.org/) (`typescript` ~6.0.2 / strict type-checking)
+- **Build Tool & Dev Server**: [Vite](https://vitejs.dev/) (`vite` ^8.2.2)
+- **Client-Side Routing**: [React Router](https://reactrouter.com/) (`react-router-dom` ^7.18.3)
+- **Iconography**: [Lucide React](https://lucide.dev/) (`lucide-react` ^1.41.0)
+- **Linter & Code Quality**: [Oxlint](https://oxc.rs/) (`oxlint` ^1.79.0)
+- **Styling Architecture**: Vanilla CSS Design Token System with CSS Custom Properties (zero CSS framework runtime overhead, responsive layouts, high performance)
 
 ### Planned Backend & Machine Learning Stack
 - **API Framework**: Python 3.11+ / FastAPI
@@ -129,7 +164,7 @@ The table below honestly reflects what is currently implemented in this reposito
 
 ---
 
-## Project Structure
+## Repository Structure
 
 ```text
 flyash-brick-ai/
@@ -137,27 +172,38 @@ flyash-brick-ai/
 ├── src/
 │   ├── assets/                 # SVGs and branding media
 │   ├── components/
-│   │   ├── common/             # Reusable UI (Button, GlassPanel, Stepper, State Indicators)
+│   │   ├── common/             # Reusable UI primitives (Button, GlassPanel, Stepper, State Indicators)
 │   │   ├── dataset/            # Dataset table and SVG ScatterPlotVisualizer
-│   │   ├── hero/               # Hero section & InteractivePipeline visualizer
+│   │   ├── hero/               # Hero typography & InteractivePipeline visualizer
 │   │   ├── layout/             # Navbar, Footer, AppShell workstation wrapper
-│   │   ├── modules/            # Two-pillar editorial architecture section
-│   │   ├── optimization/       # ParetoConvergenceVisualizer and batch views
-│   │   ├── prediction/         # Prediction preview and kinetics components
+│   │   ├── modules/            # Two-pillar editorial architecture overview
+│   │   ├── optimization/       # ParetoConvergenceVisualizer and batch prescription views
+│   │   ├── prediction/         # Prediction preview and kinetics progression
 │   │   └── scroll-story/       # 7-stage editorial storytelling pipeline
-│   ├── context/                # ThemeContext (Light / System / Dark)
+│   ├── context/                # ThemeContext (Light, System, Dark)
 │   ├── data/
 │   │   └── demo/               # Centralized demo datasets (papers, dataset, optimization)
+│   │       ├── dataset.ts      # 18 curated benchmark mixes
+│   │       ├── papers.ts       # Empirical literature metadata for extraction simulation
+│   │       ├── optimization.ts # Candidate populations & Pareto optimal solutions
+│   │       ├── predictions.ts  # Formulation presets & surrogate heuristics
+│   │       ├── pipeline.ts     # Formal research milestone specifications
+│   │       └── index.ts        # Central re-export barrel
 │   ├── layouts/                # PublicLayout and WorkstationLayout wrappers
 │   ├── lib/
-│   │   └── api/                # API types, HTTP client, and modular service layer
+│   │   └── api/                # Service layer decoupling frontend from future backend
+│   │       ├── types.ts        # Formal request/response contracts for all endpoints
+│   │       ├── client.ts       # Standardized fetch client with mock mode toggle
+│   │       ├── services.ts     # Extraction, validation, dataset, prediction, optimization services
+│   │       └── index.ts
 │   ├── pages/                  # Page route components
-│   ├── types/                  # Core TypeScript domain models
+│   ├── types/                  # Core TypeScript domain models (FlyAshMixRecord, etc.)
 │   ├── App.tsx                 # Root application routing and providers
 │   ├── index.css               # Design tokens, accessibility, and theme variables
 │   └── main.tsx                # Application entry point
 ├── .env.example                # Environment variable configuration template
 ├── .gitignore                  # Comprehensive version control ignore rules
+├── vercel.json                 # Vercel Single Page Application rewrite rules
 ├── CHANGELOG.md                # Project version history
 ├── CONTRIBUTING.md             # Developer workflow and guidelines
 ├── LICENSE                     # MIT License source code notice
@@ -171,8 +217,8 @@ flyash-brick-ai/
 ## Getting Started
 
 ### Prerequisites
-- Node.js (version 18.0 or higher recommended)
-- npm (version 9.0 or higher)
+- **Node.js**: version 18.0 or higher recommended
+- **npm**: version 9.0 or higher
 
 ### 1. Clone the Repository
 ```bash
@@ -185,7 +231,7 @@ cd flyash-brick-ai
 npm install
 ```
 
-### 3. Environment Setup
+### 3. Environment Configuration
 Copy the template configuration:
 ```bash
 cp .env.example .env.local
@@ -202,18 +248,46 @@ Open your browser and navigate to `http://localhost:5173`.
 ```bash
 npm run build
 ```
-Compiles TypeScript types and builds optimized static assets to the `dist/` directory.
+Runs TypeScript verification (`tsc -b`) and produces an optimized production bundle in the `dist/` directory.
 
-### 6. Preview Production Build
+### 6. Preview Production Build Locally
 ```bash
 npm run preview
 ```
 
 ---
 
-## Environment Variables
+## Deployment on Vercel
 
-The application can be configured through environment variables:
+The repository includes a pre-configured [`vercel.json`](vercel.json) file with Single Page Application rewrite rules to ensure seamless routing on page refreshes:
+
+```json
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+```
+
+### Deploy via GitHub Integration (Recommended)
+1. Push your repository to GitHub:
+   ```bash
+   git push origin main
+   ```
+2. Log in to [Vercel](https://vercel.com) using your GitHub account.
+3. Select **Add New...** > **Project** and import `flyash-brick-ai`.
+4. Vercel automatically detects the Vite preset:
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+   - **Install Command**: `npm install`
+5. Click **Deploy**. The site will be live with automatic CI/CD on subsequent pushes.
+
+---
+
+## Environment Variables
 
 | Variable | Default Value | Description |
 |---|---|---|
@@ -224,7 +298,7 @@ The application can be configured through environment variables:
 
 ---
 
-## Demo Data Notice
+## Demo Data & Prototype Disclaimers
 
 Current frontend interactive features utilize curated mock data stored in `src/data/demo/`:
 
@@ -233,18 +307,18 @@ Current frontend interactive features utilize curated mock data stored in `src/d
 - `optimization.ts`: Illustrative candidate vectors and non-dominated Pareto solutions.
 - `predictions.ts`: Computational heuristics simulating multi-target surrogate responses.
 
-These values demonstrate user experience and data flow. They **must not** be interpreted as completed experimental findings or verified published model metrics.
+> **Research Integrity Notice**: These values demonstrate user experience and data flow. They **must not** be interpreted as completed experimental findings or verified published model metrics. All demo outputs in the UI are visibly marked with illustrative indicators.
 
 ---
 
 ## Research Methodology
 
-The complete methodological workflow bridges literature extraction to manufacturing decision support:
+The platform models an end-to-end analytical workflow:
 
 ```text
-Literature Sourcing (PDFs)
+Published Literature Sourcing (PDFs)
        ↓
-Bounding-Box Table Detection & Heuristic OCR
+Bounding-Box Table Localization & Heuristic OCR
        ↓
 Constituent Token Extraction & Column Mapping
        ↓
@@ -263,7 +337,7 @@ Factory Pan Mixer Batching Prescription
 
 ---
 
-## Machine Learning Direction
+## Machine Learning & Optimization Direction
 
 The planned analytical core encompasses:
 
@@ -312,7 +386,7 @@ The standardized benchmark dataset schema includes the following primary fields:
 
 ---
 
-## Research References
+## Research References & Standards
 
 1. **Kumar, S., & Prasad, J.** (2021). *Experimental Investigation on Pozzolanic Reactivity of Class F Fly Ash-Lime-Gypsum Bricks*. Construction and Building Materials. [DOI: 10.1016/j.conbuildmat.2021.124501](https://doi.org/10.1016/j.conbuildmat.2021.124501)
 2. **Shaikh, F. U. A., et al.** (2019). *Mechanical and Durability Properties of High Volume Fly Ash Bricks with OPC Additives*. Materials and Structures (RILEM). [DOI: 10.1016/j.conbuildmat.2019.04.112](https://doi.org/10.1016/j.conbuildmat.2019.04.112)
@@ -324,7 +398,7 @@ The standardized benchmark dataset schema includes the following primary fields:
 
 ---
 
-## Academic Context & Sustainability Alignment
+## Academic Context & SDG Alignment
 
 This project is conducted as an academic capstone initiative within the **Department of Computer Engineering**, bridging computational computer science (applied machine learning, heuristic extraction, evolutionary multi-objective optimization) with sustainable civil engineering materials.
 
@@ -336,15 +410,24 @@ This project is conducted as an academic capstone initiative within the **Depart
 
 ## Project Team
 
-- **Academic Program**: Bachelor of Technology (B.Tech) in Computer Engineering
-- **Domain**: Applied Machine Learning, Materials Informatics, Sustainable Computing
+This project is developed as an academic capstone initiative in the **Department of Computer Engineering**:
+
+| Team Member | Academic Program | Domain Focus |
+|---|---|---|
+| **Swayam Mandhani** | B.Tech Computer Engineering | Applied ML & Platform Architecture |
+| **Pruthviraj Mule** | B.Tech Computer Engineering | Data Engineering & Optimization |
+| **Khush Paliwal** | B.Tech Computer Engineering | ML Modeling & Evaluation |
+| **Rohan Mungse** | B.Tech Computer Engineering | Pipeline Ingestion & UI/UX Engineering |
+
+- **Institutional Department**: Department of Computer Engineering
+- **Focus Area**: Applied Machine Learning, Materials Informatics, Sustainable Computing
 - **Repository Maintainer**: [Swayam Mandhani](https://github.com/SwayamMandhani06)
 
 ---
 
-## License
+## License & Intellectual Property
 
-The source code of this software platform is licensed under the [MIT License](LICENSE).
+The source code of this software platform is released under the [MIT License](LICENSE).
 
 > **Important Notice on Research Material & Third-Party Literature**:  
 > The MIT License applies exclusively to the software source code contained in this repository. Academic research papers, publishers' copyrighted articles, citation abstracts, and any future literature-derived benchmark records remain the intellectual property of their respective authors and publishers, and may be subject to separate copyright, academic fair-use, or open-access licensing terms.
