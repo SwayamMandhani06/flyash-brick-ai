@@ -37,6 +37,14 @@ def gen_document_id() -> str:
     return f"doc_{uuid.uuid4().hex[:12]}"
 
 
+def gen_run_id() -> str:
+    return f"vrun_{uuid.uuid4().hex[:12]}"
+
+
+def gen_finding_id() -> str:
+    return f"find_{uuid.uuid4().hex[:12]}"
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -193,6 +201,9 @@ class ExperimentalRecord(Base):
     history_events: Mapped[List["ReviewHistory"]] = relationship(
         "ReviewHistory", back_populates="record", cascade="all, delete-orphan", order_by="ReviewHistory.timestamp.desc()"
     )
+    validation_runs: Mapped[List["ValidationRun"]] = relationship(
+        "ValidationRun", back_populates="record", cascade="all, delete-orphan", order_by="ValidationRun.created_at.desc()"
+    )
 
 
 class ReviewHistory(Base):
@@ -273,3 +284,57 @@ class ModelRegistryMetadata(Base):
     is_trained: Mapped[bool] = mapped_column(Boolean, default=False)
     training_notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
+class ValidationRun(Base):
+    """Reproducible, auditable record of scientific validation and normalization run."""
+    __tablename__ = "validation_runs"
+
+    run_id: Mapped[str] = mapped_column(String(64), primary_key=True, default=gen_run_id)
+    record_id: Mapped[str] = mapped_column(
+        String(100), ForeignKey("records.record_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    rule_version: Mapped[str] = mapped_column(String(32), nullable=False, default="v1.0.0-rules")
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False, default="v1.0.0-canonical")
+    status: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="passed"
+    )  # passed | passed_with_warnings | failed
+    is_eligible_for_model_ready: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_eligible_for_compressive_strength: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_eligible_for_water_absorption: Mapped[bool] = mapped_column(Boolean, default=False)
+    normalized_values: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON, nullable=True)
+    summary: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+    # Relationships
+    record: Mapped["ExperimentalRecord"] = relationship("ExperimentalRecord", back_populates="validation_runs")
+    findings: Mapped[List["ValidationFinding"]] = relationship(
+        "ValidationFinding", back_populates="run", cascade="all, delete-orphan", order_by="ValidationFinding.created_at.asc()"
+    )
+
+
+class ValidationFinding(Base):
+    """Granular scientific validation finding or unit/mass conversion rule diagnostic."""
+    __tablename__ = "validation_findings"
+
+    finding_id: Mapped[str] = mapped_column(String(64), primary_key=True, default=gen_finding_id)
+    run_id: Mapped[str] = mapped_column(
+        String(64), ForeignKey("validation_runs.run_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    record_id: Mapped[str] = mapped_column(String(100), nullable=False, index=True)
+    rule_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    severity: Mapped[str] = mapped_column(String(20), nullable=False)  # info | warning | error
+    finding_code: Mapped[str] = mapped_column(String(64), nullable=False)
+    message: Mapped[str] = mapped_column(Text, nullable=False)
+    field_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    original_value: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    original_unit: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    normalized_value: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    normalized_unit: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    evidence_rationale: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    suggested_action: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+    # Relationships
+    run: Mapped["ValidationRun"] = relationship("ValidationRun", back_populates="findings")
+

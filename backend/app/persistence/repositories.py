@@ -11,10 +11,14 @@ from backend.app.persistence.models import (
     ModelRegistryMetadata,
     Paper,
     ReviewHistory,
+    ValidationRun,
+    ValidationFinding,
     gen_document_id,
+    gen_finding_id,
     gen_model_id,
     gen_paper_id,
     gen_record_id,
+    gen_run_id,
 )
 
 
@@ -391,4 +395,60 @@ class DocumentRepository:
         for r in created_records:
             db.refresh(r)
         return created_records
+
+
+class ValidationRepository:
+    @staticmethod
+    def save_run(
+        db: Session,
+        run: ValidationRun,
+        findings: List[ValidationFinding],
+    ) -> ValidationRun:
+        """Atomically saves a validation run and its granular findings."""
+        if not run.run_id:
+            run.run_id = gen_run_id()
+        db.add(run)
+        db.flush()
+
+        for finding in findings:
+            if not finding.finding_id:
+                finding.finding_id = gen_finding_id()
+            finding.run_id = run.run_id
+            db.add(finding)
+
+        db.commit()
+        db.refresh(run)
+        return run
+
+    @staticmethod
+    def get_run_by_id(db: Session, run_id: str) -> Optional[ValidationRun]:
+        return db.get(ValidationRun, run_id)
+
+    @staticmethod
+    def get_latest_run_for_record(db: Session, record_id: str) -> Optional[ValidationRun]:
+        stmt = (
+            select(ValidationRun)
+            .where(ValidationRun.record_id == record_id)
+            .order_by(ValidationRun.created_at.desc())
+        )
+        return db.scalar(stmt)
+
+    @staticmethod
+    def list_findings_for_record(db: Session, record_id: str) -> List[ValidationFinding]:
+        stmt = (
+            select(ValidationFinding)
+            .where(ValidationFinding.record_id == record_id)
+            .order_by(ValidationFinding.created_at.desc())
+        )
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def list_runs_for_record(db: Session, record_id: str) -> List[ValidationRun]:
+        stmt = (
+            select(ValidationRun)
+            .where(ValidationRun.record_id == record_id)
+            .order_by(ValidationRun.created_at.desc())
+        )
+        return list(db.scalars(stmt).all())
+
 

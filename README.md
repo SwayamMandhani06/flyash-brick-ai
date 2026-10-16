@@ -95,7 +95,7 @@ flowchart TD
 | **Phase 1** | FastAPI backend skeleton, configuration, CORS, structured error masking, `/api/health`, `/api/ready` | **Completed** | Full suite contract tests passing |
 | **Phase 2** | Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, auditable review history, frozen dataset versions, synthetic data isolation | **Completed** | Strict FK enforcement, review logs, isolation tests |
 | **Phase 3** | PDF ingestion, SHA-256 deduplication, path-traversal prevention, `pdfplumber` text/table parsing, candidate records with provenance, idempotent retries | **Completed** | 43 backend tests passing, scanned PDF detection |
-| **Phase 4** | Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence | **Underway** | Scientific constraint checks without zero-fabrication |
+| **Phase 4** | Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific eligibility | **Completed** | Evidence-aware constraint checks without zero-fabrication |
 | **Phase 5** | Data readiness profiling snapshot, target comparability gates, exploratory analysis | *Deferred* | Planned (no models trained prior to readiness gate) |
 | **Phase 6** | XGBoost dual-target training (strength & absorption), paper-grouped evaluation, baseline comparator | *Deferred* | Planned |
 | **Phase 7** | TreeSHAP explainability engine, feature attribution, interaction effects | *Deferred* | Planned |

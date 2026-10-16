@@ -144,12 +144,49 @@ Candidate records extracted from documents are accessible via `GET /api/document
 
 ---
 
-## 8. Implemented Endpoints
+---
+
+## 8. Scientific Data Validation & Normalization Engine (Phase 4 Scope)
+
+Phase 4 introduces a deterministic, provenance-preserving validation and normalization service for reviewed fly ash brick data.
+
+### Validation Architecture & Principles
+- **Layered Traceability:** Raw evidence, candidate extractions, reviewed canonical records, validation findings, and derived normalized values are strictly separated.
+- **No In-Place Overwrite:** The canonical experimental record is never mutated in-place by validation or normalization. Original units, reported basis, and null values are preserved.
+- **Evidence-Based Rules:** Rules are grounded in civil engineering standards (IS 12894:2002 for fly ash lime bricks, IS 3812 Part 1 for pozzolana) and materials science principles.
+
+### Validation Categories
+1. **Structural & Provenance (`STRUCT_*`):**
+   - Foreign key verification against paper registry.
+   - Specific source location verification (page, table/figure, or excerpt).
+   - Non-negativity constraints on physical parameters.
+   - Potential duplicate detection within the same publication (without silent deletion).
+2. **Unit Validation & Conversion Registry (`UNIT_*`):**
+   - Controlled unit conversions for compressive strength (e.g. `psi`, `kgf/cm²`, `N/mm²`, `bar` $\rightarrow$ `MPa`).
+   - Density conversions (`g/cm³` $\rightarrow$ `kg/m³`).
+   - Rejects or flags ambiguous/unsupported unit strings without guessing.
+3. **Composition & Mass Balance (`COMP_*`):**
+   - Normalizes percentages to decimal fractions (0.0 - 1.0) for derived calculations.
+   - Detects incomplete formulations (marked `dry_mass_balance_status: "indeterminate"`).
+   - Validates dry mass totals against nominal $\pm 5\%$ tolerance ($0.95 \le \sum \le 1.05$). Under-sum and over-sum flagged explicitly.
+   - Never automatically rescales reported proportions to 100%.
+4. **Water & Binder Information (`WATER_*`):**
+   - Derives $w/b$ only when water amount, basis, and binder constituents are documented.
+   - Preserves `null` when water content is unreported (no zero-fabrication).
+5. **Performance Standards Alignment (`PERF_*`):**
+   - Compressive strength evaluated against IS 12894:2002 Class 3.5 structural minimum threshold (3.5 MPa).
+   - Water absorption evaluated against IS 12894:2002 20.0% maximum threshold.
+6. **Model-Readiness Gate:**
+   - A record is marked `is_eligible_for_model_ready = True` if and only if it is human-curator `accepted`, has `value_origin != "synthetic"`, contains zero error-level findings, and has verified primary performance targets and fly ash content.
+
+---
+
+## 9. Implemented Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/health` | Process liveness check |
-| `GET` | `/api/ready` | Subsystem readiness (`database: operational`, `extraction_engine: operational`) |
+| `GET` | `/api/ready` | Subsystem readiness (`database: operational`, `extraction_engine: operational`, `validation_service: operational`) |
 | `GET` | `/api/schema` | Canonical schema version and full data dictionary |
 | `POST` | `/api/documents/upload` | Upload and register a research PDF with cryptographic SHA-256 hash |
 | `POST` | `/api/documents/{id}/extract` | Parse text and tables, and extract candidate experimental formulation records |
@@ -164,6 +201,13 @@ Candidate records extracted from documents are accessible via `GET /api/document
 | `GET` | `/api/records/{id}` | Get experimental record |
 | `PATCH` | `/api/records/{id}/review` | Apply review action or audited field correction |
 | `GET` | `/api/records/{id}/history`| Retrieve audit history log for a record |
+| `POST` | `/api/records/{id}/validate` | Execute scientific validation and persist versioned run with findings |
+| `GET` | `/api/records/{id}/validation` | Retrieve latest scientific validation run and findings for a record |
+| `GET` | `/api/validation/runs/{run_id}` | Retrieve specific validation run by run_id |
+| `GET` | `/api/records/{id}/validation/findings` | List all historical validation findings for a record |
+| `GET` | `/api/records/{id}/validation/runs` | List all historical validation runs for a record |
+| `POST` | `/api/records/{id}/normalize` | Execute normalization and return paired original vs normalized view |
+| `GET` | `/api/records/{id}/normalized` | Retrieve paired original vs normalized values comparison |
 | `POST` | `/api/datasets/versions` | Create immutable dataset snapshot |
 | `GET` | `/api/datasets/versions` | List dataset version snapshots |
 | `GET` | `/api/datasets/versions/{id}` | Get dataset version snapshot and included record IDs |
@@ -173,7 +217,7 @@ Candidate records extracted from documents are accessible via `GET /api/document
 
 ---
 
-## 9. Running Automated Tests
+## 10. Running Automated Tests
 
 Run the complete backend test suite:
 
@@ -181,16 +225,16 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All 43 unit, integration, persistence, schema, and extraction tests run deterministically using isolated temporary SQLite databases and synthetic in-memory PDFs. Real research data and external networks are never required or modified by test runs.
+All 64 unit, integration, persistence, schema, extraction, and validation tests run deterministically using isolated temporary SQLite databases and synthetic in-memory PDFs. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 10. Phase Roadmap Alignment
+## 11. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
 - **Phase 3 (Completed):** Literature PDF ingestion, SHA-256 deduplication, `pdfplumber` text/table extraction, candidate record generation with provenance, idempotent retries, honest scanned PDF detection.
-- **Phase 4 (Deferred):** Scientific normalization & stoichiometric mass balance rules.
+- **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, model-readiness eligibility gate.
 - **Phase 5 (Deferred):** Dataset readiness profiling snapshot & EDA.
 - **Phase 6 (Deferred):** XGBoost dual-target training & evaluation.
 - **Phase 7 (Deferred):** TreeSHAP explainability engine.
