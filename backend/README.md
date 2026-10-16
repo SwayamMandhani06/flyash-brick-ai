@@ -265,18 +265,25 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All **83 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Real research data and external networks are never required or modified by test runs.
+All **84 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover the full end-to-end research workflow from paper registration, PDF ingestion, candidate extraction, audited field corrections, scientific validation, acceptance, dataset snapshots, to exploratory data analysis. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 12. Phase Roadmap Alignment
+## 12. Researcher Data Ingestion Guide
+
+For human curators and civil engineering researchers curating empirical data from published literature, see the step-by-step operational guide:
+- **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, and Phase 6 operational readiness criteria.
+
+---
+
+## 13. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
 - **Phase 3 (Completed):** Literature PDF ingestion, SHA-256 deduplication, `pdfplumber` text/table extraction, candidate record generation with provenance, idempotent retries, honest scanned PDF detection.
 - **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific model-readiness eligibility gate.
 - **Phase 5 (Completed):** Exploratory data analysis, feature assessment, constancy/collinearity checks, leakage prevention, and target-specific dataset readiness gates.
-- **Phase 6 (Deferred):** XGBoost dual-target training, baseline mean model, nested grouped cross-validation by paper.
+- **Phase 6 (Gate Enforced / Modeling Blocked):** Data readiness gate rigorously evaluated against active local database (0 accepted empirical records); XGBoost modeling strictly blocked until authentic literature data ingestion reaches operational thresholds ($\ge 15$ samples, $\ge 3$ papers per target); end-to-end ingestion pipeline verified and documented.
 - **Phase 7 (Deferred):** TreeSHAP explainability engine.
 - **Phase 8 (Deferred):** Feasible mix design optimizer.
 - **Phase 9 (Deferred):** Full frontend workstation integration.

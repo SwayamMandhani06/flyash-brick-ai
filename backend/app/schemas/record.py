@@ -6,6 +6,7 @@ from pydantic import BaseModel, ConfigDict, Field
 class RecordBase(BaseModel):
     # Identity & Provenance
     paper_id: str = Field(..., description="Foreign key to registered paper")
+    document_id: Optional[str] = Field(None, description="Optional foreign key to uploaded source document")
     experiment_group_id: Optional[str] = Field(None, description="Groups shared underlying physical experiments")
     duplicate_group_id: Optional[str] = Field(None, description="Duplicate detection cluster identifier")
     source_title: Optional[str] = None
