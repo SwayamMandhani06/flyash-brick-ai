@@ -1,0 +1,51 @@
+{
+  "_notice": "SYNTHETIC TEST FIXTURES ONLY — NEVER USE FOR RESEARCH, MODEL TRAINING, OR REPORTED METRICS",
+  "synthetic_papers": [
+    {
+      "paper_id": "SYNTHETIC_PAPER_TEST_01",
+      "doi_or_url": "https://synthetic.test.internal/doi/01",
+      "title": "Deterministic Synthetic Paper for Software Plumbing Tests",
+      "authors": "Synthetic Test Author A & Author B",
+      "journal": "Synthetic Materials Journal (Mock)",
+      "publication_year": 2026,
+      "material_system": "fly_ash_lime_gypsum_brick",
+      "notes": "SYNTHETIC_TEST_ONLY fixture strictly for database schema and transition verification."
+    }
+  ],
+  "synthetic_records": [
+    {
+      "record_id": "SYNTHETIC_REC_01",
+      "paper_id": "SYNTHETIC_PAPER_TEST_01",
+      "experiment_group_id": "SYNTH_EXP_GRP_01",
+      "value_origin": "synthetic",
+      "material_system": "fly_ash_lime_gypsum_brick",
+      "fly_ash_fraction": 0.65,
+      "lime_fraction": 0.18,
+      "gypsum_fraction": 0.05,
+      "sand_fraction": 0.12,
+      "water_content_or_ratio": 0.14,
+      "curing_duration_days": 28,
+      "compressive_strength_mpa": 16.5,
+      "water_absorption_pct": 11.0,
+      "review_status": "candidate",
+      "normalization_notes": "SYNTHETIC_TEST_ONLY fixture"
+    },
+    {
+      "record_id": "SYNTHETIC_REC_02",
+      "paper_id": "SYNTHETIC_PAPER_TEST_01",
+      "experiment_group_id": "SYNTH_EXP_GRP_01",
+      "value_origin": "synthetic",
+      "material_system": "fly_ash_lime_gypsum_brick",
+      "fly_ash_fraction": 0.60,
+      "lime_fraction": 0.15,
+      "gypsum_fraction": 0.05,
+      "sand_fraction": 0.20,
+      "water_content_or_ratio": 0.15,
+      "curing_duration_days": 28,
+      "compressive_strength_mpa": 19.0,
+      "water_absorption_pct": 10.5,
+      "review_status": "accepted",
+      "normalization_notes": "SYNTHETIC_TEST_ONLY fixture"
+    }
+  ]
+}

@@ -86,3 +86,10 @@ wheels/
 scratch/
 tmp/
 temp/
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+PLAN.md
