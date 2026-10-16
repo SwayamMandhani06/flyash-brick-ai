@@ -45,6 +45,10 @@ def gen_finding_id() -> str:
     return f"find_{uuid.uuid4().hex[:12]}"
 
 
+def gen_analysis_id() -> str:
+    return f"eda_{uuid.uuid4().hex[:12]}"
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -338,3 +342,25 @@ class ValidationFinding(Base):
     # Relationships
     run: Mapped["ValidationRun"] = relationship("ValidationRun", back_populates="findings")
 
+
+class AnalysisRun(Base):
+    """Reproducible record of Exploratory Data Analysis, feature assessment, and dataset readiness."""
+    __tablename__ = "analysis_runs"
+
+    analysis_id: Mapped[str] = mapped_column(String(64), primary_key=True, default=gen_analysis_id)
+    dataset_version_id: Mapped[Optional[str]] = mapped_column(
+        String(64), ForeignKey("dataset_versions.version_id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    material_system: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
+    schema_version: Mapped[str] = mapped_column(String(32), nullable=False)
+    analysis_config: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    sample_summary: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    descriptive_statistics: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    feature_assessments: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    correlation_findings: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=False)
+    target_readiness: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    limitations: Mapped[List[str]] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+    # Relationships
+    dataset_version: Mapped[Optional["DatasetVersion"]] = relationship("DatasetVersion")

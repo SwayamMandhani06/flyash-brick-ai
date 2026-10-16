@@ -196,6 +196,36 @@ Phase 3 introduces a secure literature ingestion pipeline:
 
 ---
 
+## Scientific Data Validation & Normalization Engine (Phase 4)
+
+Phase 4 implements transparent, evidence-aware validation and normalization without mutating canonical records:
+1. **Unit Conversion Registry:** Transparent conversions for compressive strength (`psi`, `kgf/cm²`, `N/mm²`, `bar` $\rightarrow$ `MPa`) and density (`g/cm³` $\rightarrow$ `kg/m³`).
+2. **Mass Balance Qualification:** Dry mass fractions are validated against nominal $\pm 5\%$ tolerance ($0.95 \le \sum \le 1.05$) only when composition basis is explicit. Incomplete formulations are reported as `indeterminate`.
+3. **No Automatic In-Place Rescaling:** Original values, reported units, and mix bases are preserved; normalized decimal views are maintained alongside reported data.
+4. **Water-to-Binder Verification:** $w/b$ derivation requires explicit water basis and binder constituents; missing water amounts remain `null`. Universal arbitrary bounds are eliminated.
+5. **IS 12894 Standards Benchmarking:** Measured compressive strength and water absorption are benchmarked against IS 12894:2002 class thresholds as reference context.
+6. **Target-Specific Model Readiness Gate:** Eligibility for compressive strength is decoupled from water absorption. Records must be accepted, empirical, error-free, and contain the target property.
+
+---
+
+## Exploratory Data Analysis & Dataset Readiness Gate (Phase 5)
+
+Phase 5 establishes an evidence-based profiling and readiness pipeline for reviewed research data before any machine learning models are trained:
+1. **Empirical Data Rigor:** Descriptive statistics and corpus distributions evaluate reviewed empirical data only (`value_origin != "synthetic"`). Synthetic fixtures are strictly isolated for unit testing.
+2. **Corpus Honesty:** When the literature corpus is small or empty, the pipeline honestly reports zero eligible samples and sets target readiness to `unsupported_insufficient_data` with explicit limitations, without fabricating statistics.
+3. **Leakage Prevention & Feature Suitability:**
+   - Strictly excludes identifiers (`record_id`, `paper_id`, `doi_or_url`, etc.), provenance notes, and review timestamps.
+   - Strictly excludes post-test destructive outcomes (`failure_mode`, `is12894_class_nominal`, etc.).
+   - Targets (`compressive_strength_mpa`, `water_absorption_pct`) are quarantined from model input manifests.
+   - Constant features (zero variance) and near-constant features (>95% identical) are flagged for exclusion.
+   - Bivariate Pearson correlation matrix detects extreme collinearity ($|r| \ge 0.95$) for review.
+4. **Target-Specific Readiness Decisions (PLAN.md Section 12):**
+   - Readiness is evaluated separately for compressive strength and water absorption.
+   - Classifications: `unsupported_insufficient_data`, `preliminary_limited_evidence`, or `ready_for_evaluation`.
+   - Requires $\ge 3$ independent papers for grouped evaluation (`GroupKFold` by `paper_id`) to prevent literature leakage across training and validation splits.
+
+---
+
 ## Repository Structure
 
 ```text
@@ -203,12 +233,12 @@ flyash-brick-ai/
 ├── backend/
 │   ├── app/
 │   │   ├── api/
-│   │   │   ├── routes/         # health, schema, papers, records, documents, datasets, models
+│   │   │   ├── routes/         # health, schema, papers, records, documents, datasets, eda, validation, models
 │   │   │   └── router.py       # Central API v1 router
 │   │   ├── core/               # config, errors, logging
 │   │   ├── persistence/        # SQLAlchemy models, SQLite pragma, repositories
 │   │   ├── schemas/            # Pydantic v2 validation contracts
-│   │   ├── services/           # pdf_extractor, validation & normalization
+│   │   ├── services/           # pdf_extractor, validator, eda service
 │   │   └── main.py             # FastAPI entry point & lifespan
 │   ├── tests/                  # Deterministic automated pytest suite
 │   ├── requirements.txt        # Runtime dependencies
@@ -233,7 +263,7 @@ Run the complete backend test suite:
 ```powershell
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
-- **43 automated tests** cover configuration, CORS, structured error masking, database persistence, foreign keys, transaction rollbacks, paper registry, review history, dataset snapshots, synthetic isolation, PDF upload validation, deduplication, `pdfplumber` extraction, scanned PDF detection, and idempotent retries.
+- **83 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, and leakage prevention.
 - All tests execute deterministically against isolated temporary SQLite databases and synthetic in-memory PDFs without requiring external network connectivity.
 
 Run frontend regression checks:
@@ -241,6 +271,7 @@ Run frontend regression checks:
 npm run lint
 npm run build
 ```
+
 
 ---
 

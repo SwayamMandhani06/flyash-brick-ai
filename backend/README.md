@@ -181,12 +181,47 @@ Phase 4 introduces a deterministic, provenance-preserving validation and normali
 
 ---
 
-## 9. Implemented Endpoints
+## 9. Exploratory Data Analysis, Feature Assessment & Dataset Readiness (Phase 5 Scope)
+
+Phase 5 establishes a transparent, reproducible analysis pipeline for reviewed research data, preparing an evidence-based audit of dataset quality and the suitability of individual features and targets before model training.
+
+### Key Architectural Boundaries
+- **No Premature ML Model Training:** No XGBoost models are trained in Phase 5. Training, tuning, and grouped evaluation belong strictly to Phase 6.
+- **Empirical Literature vs. Synthetic Isolation:** All descriptive statistics and corpus summaries evaluate reviewed empirical data only (`value_origin != "synthetic"`). Synthetic records are isolated strictly for software testing.
+- **Honest Absence of Results:** When the actual research corpus contains insufficient reviewed literature records (e.g. during initial setup), the pipeline explicitly reports `total_records: 0`, assigns `readiness_status: "unsupported_insufficient_data"`, and records transparent limitations without fabricating metrics or sample sizes.
+- **Read-Only Non-Destructive Profiling:** Canonical records and frozen dataset snapshots are never mutated during analysis runs.
+
+### Feature Assessment & Leakage Prevention Pipeline
+Every schema attribute is evaluated for suitability and leakage risk:
+1. **Target Variables:** `compressive_strength_mpa` (Target 1) and `water_absorption_pct` (Target 2) are identified as targets and strictly prohibited as input features for their respective models.
+2. **Excluded Leakage & Metadata Fields:**
+   - *Identifiers:* `record_id`, `paper_id`, `document_id`, `doi_or_url`, `experiment_group_id`, `duplicate_group_id`.
+   - *Provenance & Citations:* `source_title`, `source_authors`, `source_page`, `source_table_or_figure`, `source_excerpt_or_cell_reference`, `raw_reported_values`.
+   - *Pipeline & Review State:* `review_status`, `reviewed_by`, `reviewed_at`, `review_notes`, `created_at`, `value_origin`.
+   - *Post-Test Destructive Outcomes:* `failure_mode`, `is12894_class_nominal`, `is12894_water_absorption_compliant`, `reported_value_type`, `specimen_count_n`, `compressive_strength_sd_mpa`.
+3. **Constancy & Collinearity Checks:**
+   - Features with zero variance are flagged `is_constant: True` and excluded (`excluded_low_variance`).
+   - Near-constant features (>95% identical observations) are flagged for sample bias.
+   - Bivariate Pearson correlation matrix detects extreme collinearity ($|r| \ge 0.95$). Strongly correlated features are documented for Phase 6 review rather than silently dropped.
+
+### Target-Specific Dataset Readiness Gates
+Per `PLAN.md` Section 12, readiness is evaluated independently for each target:
+- **Compressive Strength (MPa)**
+- **Water Absorption (%)**
+
+Readiness status is classified as:
+- `unsupported_insufficient_data`: Fewer than 15 accepted samples, fewer than 3 independent papers, or zero valid measurements. Grouped cross-validation is blocked.
+- `preliminary_limited_evidence`: 15–29 samples across $\ge 3$ papers. Grouped evaluation is structurally feasible, but high variance requires tagging models as preliminary research prototypes.
+- `ready_for_evaluation`: $\ge 30$ accepted samples across $\ge 5$ independent papers with low feature missingness and full grouped evaluation feasibility.
+
+---
+
+## 10. Implemented Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/health` | Process liveness check |
-| `GET` | `/api/ready` | Subsystem readiness (`database: operational`, `extraction_engine: operational`, `validation_service: operational`) |
+| `GET` | `/api/ready` | Subsystem readiness (`database`, `extraction_engine`, `validation_service`) |
 | `GET` | `/api/schema` | Canonical schema version and full data dictionary |
 | `POST` | `/api/documents/upload` | Upload and register a research PDF with cryptographic SHA-256 hash |
 | `POST` | `/api/documents/{id}/extract` | Parse text and tables, and extract candidate experimental formulation records |
@@ -211,13 +246,18 @@ Phase 4 introduces a deterministic, provenance-preserving validation and normali
 | `POST` | `/api/datasets/versions` | Create immutable dataset snapshot |
 | `GET` | `/api/datasets/versions` | List dataset version snapshots |
 | `GET` | `/api/datasets/versions/{id}` | Get dataset version snapshot and included record IDs |
+| `POST` | `/api/datasets/eda` | Execute reproducible EDA, feature suitability audit, and target readiness run |
+| `GET` | `/api/datasets/eda/latest` | Retrieve latest EDA and readiness assessment run |
+| `GET` | `/api/datasets/eda/runs` | List historical EDA runs with configuration and summary metadata |
+| `GET` | `/api/datasets/eda/{id}` | Retrieve specific EDA run by analysis_id |
+| `GET` | `/api/datasets/readiness` | Fast overview of target readiness for compressive strength and water absorption |
 | `POST` | `/api/models` | Register model metadata |
 | `GET` | `/api/models` | List model registry metadata |
 | `GET` | `/api/models/{id}` | Get model metadata by ID |
 
 ---
 
-## 10. Running Automated Tests
+## 11. Running Automated Tests
 
 Run the complete backend test suite:
 
@@ -225,18 +265,18 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All 64 unit, integration, persistence, schema, extraction, and validation tests run deterministically using isolated temporary SQLite databases and synthetic in-memory PDFs. Real research data and external networks are never required or modified by test runs.
+All **83 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 11. Phase Roadmap Alignment
+## 12. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
 - **Phase 3 (Completed):** Literature PDF ingestion, SHA-256 deduplication, `pdfplumber` text/table extraction, candidate record generation with provenance, idempotent retries, honest scanned PDF detection.
-- **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, model-readiness eligibility gate.
-- **Phase 5 (Deferred):** Dataset readiness profiling snapshot & EDA.
-- **Phase 6 (Deferred):** XGBoost dual-target training & evaluation.
+- **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific model-readiness eligibility gate.
+- **Phase 5 (Completed):** Exploratory data analysis, feature assessment, constancy/collinearity checks, leakage prevention, and target-specific dataset readiness gates.
+- **Phase 6 (Deferred):** XGBoost dual-target training, baseline mean model, nested grouped cross-validation by paper.
 - **Phase 7 (Deferred):** TreeSHAP explainability engine.
 - **Phase 8 (Deferred):** Feasible mix design optimizer.
 - **Phase 9 (Deferred):** Full frontend workstation integration.

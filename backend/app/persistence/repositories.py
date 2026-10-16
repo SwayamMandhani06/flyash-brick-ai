@@ -13,6 +13,8 @@ from backend.app.persistence.models import (
     ReviewHistory,
     ValidationRun,
     ValidationFinding,
+    AnalysisRun,
+    gen_analysis_id,
     gen_document_id,
     gen_finding_id,
     gen_model_id,
@@ -451,4 +453,41 @@ class ValidationRepository:
         )
         return list(db.scalars(stmt).all())
 
+
+class AnalysisRepository:
+    """Persistence operations for EDA runs, feature assessments, and readiness profiles."""
+
+    @staticmethod
+    def create(db: Session, analysis: AnalysisRun) -> AnalysisRun:
+        if not analysis.analysis_id:
+            analysis.analysis_id = gen_analysis_id()
+        db.add(analysis)
+        db.commit()
+        db.refresh(analysis)
+        return analysis
+
+    @staticmethod
+    def get_by_id(db: Session, analysis_id: str) -> Optional[AnalysisRun]:
+        return db.get(AnalysisRun, analysis_id)
+
+    @staticmethod
+    def get_latest(db: Session, dataset_version_id: Optional[str] = None) -> Optional[AnalysisRun]:
+        stmt = select(AnalysisRun)
+        if dataset_version_id:
+            stmt = stmt.where(AnalysisRun.dataset_version_id == dataset_version_id)
+        stmt = stmt.order_by(AnalysisRun.created_at.desc())
+        return db.scalars(stmt).first()
+
+    @staticmethod
+    def list_runs(
+        db: Session,
+        dataset_version_id: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[AnalysisRun]:
+        stmt = select(AnalysisRun)
+        if dataset_version_id:
+            stmt = stmt.where(AnalysisRun.dataset_version_id == dataset_version_id)
+        stmt = stmt.order_by(AnalysisRun.created_at.desc()).offset(skip).limit(limit)
+        return list(db.scalars(stmt).all())
 
