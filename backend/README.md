@@ -254,10 +254,27 @@ Readiness status is classified as:
 | `POST` | `/api/models` | Register model metadata |
 | `GET` | `/api/models` | List model registry metadata |
 | `GET` | `/api/models/{id}` | Get model metadata by ID |
+| `POST` | `/api/models/train` | Execute paper-grouped XGBoost training with baseline comparison (readiness gate enforced) |
+| `POST` | `/api/models/predict` | Generate surrogate prediction with input range validation (503 if untrained) |
+| `POST` | `/api/models/explain` | Generate SHAP additive feature attributions (503 if untrained) |
 
 ---
 
-## 11. Running Automated Tests
+## 11. XGBoost Modeling & Evaluation Pipeline (Phase 7 Scope)
+
+Phase 7 establishes the predictive modeling engine with strict empirical-data readiness gating, paper-grouped cross-validation, baseline comparison, and leakage safeguards.
+
+### Key Architectural Boundaries
+- **Strict Empirical Readiness Gate:** Model training is blocked if the target dataset contains $< 15$ accepted empirical records or $< 3$ independent literature papers (`DataReadinessGateError`).
+- **Paper-Grouped Cross-Validation:** Folds are partitioned by `paper_id` using `GroupKFold`. Held-out validation papers are strictly absent from the corresponding training fold to prevent intra-publication laboratory leakage.
+- **Reference Mean Baseline:** Evaluates a `MeanBaselineRegressor` fit strictly on the training fold, computing MAE and RMSE on the held-out fold to establish an honest reference floor.
+- **Training-Fold Preprocessing:** Imputation medians and scaling parameters are fit strictly inside training folds.
+- **Predictor Leakage Exclusions:** Identifiers (`record_id`, `paper_id`, `doi_or_url`), citation text, review lifecycle states, and post-test destructive outcomes (`failure_mode`, `is12894_class_nominal`) are quarantined from feature manifests.
+- **Honest Model Inference:** Requesting prediction or SHAP explanation for an untrained target returns a structured HTTP 503 (`MODEL_UNAVAILABLE`). The system never falls back to dummy, synthetic, or fabricated models.
+
+---
+
+## 12. Running Automated Tests
 
 Run the complete backend test suite:
 
@@ -265,26 +282,26 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All **84 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover the full end-to-end research workflow from paper registration, PDF ingestion, candidate extraction, audited field corrections, scientific validation, acceptance, dataset snapshots, to exploratory data analysis. Real research data and external networks are never required or modified by test runs.
+All **98 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, and XGBoost pipeline mechanics. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 12. Researcher Data Ingestion Guide
+## 13. Researcher Data Ingestion Guide
 
 For human curators and civil engineering researchers curating empirical data from published literature, see the step-by-step operational guide:
 - **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, and Phase 6 operational readiness criteria.
 
 ---
 
-## 13. Phase Roadmap Alignment
+## 14. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
 - **Phase 3 (Completed):** Literature PDF ingestion, SHA-256 deduplication, `pdfplumber` text/table extraction, candidate record generation with provenance, idempotent retries, honest scanned PDF detection.
 - **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific model-readiness eligibility gate.
 - **Phase 5 (Completed):** Exploratory data analysis, feature assessment, constancy/collinearity checks, leakage prevention, and target-specific dataset readiness gates.
-- **Phase 6 (Gate Enforced / Modeling Blocked):** Data readiness gate rigorously evaluated against active local database (0 accepted empirical records); XGBoost modeling strictly blocked until authentic literature data ingestion reaches operational thresholds ($\ge 15$ samples, $\ge 3$ papers per target); end-to-end ingestion pipeline verified and documented.
-- **Phase 7 (Deferred):** TreeSHAP explainability engine.
-- **Phase 8 (Deferred):** Feasible mix design optimizer.
-- **Phase 9 (Deferred):** Full frontend workstation integration.
+- **Phase 6 (Completed):** Data readiness gate verification, end-to-end research ingestion workflow (Commit `07026ad`), and researcher ingestion guide.
+- **Phase 7 (Gate Enforced / Modeling Blocked):** XGBoost dual-target regression pipeline with paper-grouped split integrity, mean baseline comparator, leakage safeguards, SHAP explainability contracts, and inference validation. Model training blocked on empty local database (`unsupported_insufficient_data`).
+- **Phase 8 (Deferred):** Feasible mix design optimizer with constraint checks.
+- **Phase 9 (Deferred):** Full frontend workstation integration with live analytical endpoints.
 

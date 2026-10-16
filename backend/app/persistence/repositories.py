@@ -304,6 +304,18 @@ class ModelMetadataRepository:
         stmt = select(ModelRegistryMetadata).order_by(ModelRegistryMetadata.created_at.desc())
         return list(db.scalars(stmt).all())
 
+    @staticmethod
+    def get_latest_trained_by_target(db: Session, target_property: str) -> Optional[ModelRegistryMetadata]:
+        stmt = (
+            select(ModelRegistryMetadata)
+            .where(
+                ModelRegistryMetadata.target_property == target_property,
+                ModelRegistryMetadata.is_trained == True,
+            )
+            .order_by(ModelRegistryMetadata.created_at.desc())
+        )
+        return db.scalar(stmt)
+
 
 class DocumentRepository:
     @staticmethod

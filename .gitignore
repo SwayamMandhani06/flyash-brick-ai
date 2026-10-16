@@ -96,4 +96,7 @@ temp/
 backend/data/documents/
 backend/data/**/*.pdf
 
+# Trained Model Artifacts
+backend/data/models/
+
 PLAN.md
