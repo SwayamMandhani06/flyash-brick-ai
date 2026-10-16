@@ -32,11 +32,11 @@ async def test_readiness_report_operational(async_client: AsyncClient) -> None:
 
     subsystems = data["subsystems"]
     assert subsystems["api_server"] == "operational"
-    # Phase 2 persistence is now operational
+    # Phase 2 persistence & Phase 3 extraction engine are now operational
     assert subsystems["database"] == "operational"
+    assert subsystems["extraction_engine"] == "operational"
 
     # Verify deferred subsystems are accurately identified without false operational claims
-    assert subsystems["extraction_engine"] == "deferred_phase_3"
     assert subsystems["validation_service"] == "deferred_phase_4"
     assert subsystems["xgboost_models"] == "deferred_phase_6"
     assert subsystems["shap_explainer"] == "deferred_phase_7"

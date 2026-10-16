@@ -106,13 +106,56 @@ Phase 2 provides metadata persistence only (`POST /api/models`, `GET /api/models
 
 ---
 
-## 7. Implemented Endpoints
+---
+
+## 7. Literature PDF Ingestion & Extraction Engine (Phase 3 Scope)
+
+Phase 3 introduces a secure, provenance-preserving pipeline for literature PDF ingestion, text/table parsing, and candidate experimental record generation.
+
+### Architecture & Grounding Principles
+- **Separation of Evidence and Decision:** PDF extraction produces *candidate* records (`review_status == "candidate"`). A parser output is never automatically promoted to `accepted` or `model_ready`.
+- **Traceable Provenance:** Every candidate record links to `document_id`, `paper_id`, `source_page` (1-indexed), and explicit table/text snippet references.
+- **No Value Fabrication:** Missing parameters or unmeasured constituents remain `null`. The system never fills unknown fractions with `0.0`. Ambiguous columns or unmapped materials are flagged for human review.
+
+### Document Upload & Validation
+- **Endpoint:** `POST /api/documents/upload` (multipart/form-data)
+- **File Validation:**
+  - Enforces `MAX_UPLOAD_SIZE_BYTES` (default: 15 MB / 15,728,640 bytes). Oversized files return `413 Payload Too Large`.
+  - Validates `%PDF-` binary magic header. Empty or invalid files return `422 Unprocessable Entity`.
+  - Sanitizes filenames against path traversal attacks. Files are stored using unique UUID identifiers in `DOCUMENTS_STORAGE_DIR`.
+  - Deduplication: Computes cryptographic `SHA-256` hash. Duplicate uploads safely return the existing document metadata (`200 OK`) without re-writing files or creating duplicate database entities.
+
+### Extraction Pipeline (`pdfplumber`)
+- **Endpoint:** `POST /api/documents/{id}/extract`
+- **Capabilities:**
+  - Page-by-page text extraction preserving page numbering.
+  - Table parsing with positional column alignment to accurately capture tabular mix proportions (`fly_ash_fraction`, `cement_fraction`, `lime_fraction`, `sand_fraction`, `gypsum_fraction`, `compressive_strength_mpa`, `water_absorption_pct`, etc.).
+  - Preserves source terminology and units.
+- **Honest Limitations & Scanned PDF Handling:**
+  - Scanned/image-only PDFs (pages with 0 extracted characters) are detected and flagged with warning code `SCANNED_PDF_DETECTED`.
+  - Heavyweight OCR (e.g. Tesseract) is deliberately omitted in this phase to maintain a lightweight, deterministic runtime. Scanned documents are surfaced for manual entry.
+  - Encrypted, corrupted, or password-protected PDFs fail gracefully with structured error messages (`EXTRACTION_FAILED`).
+- **Idempotent Retry Behavior:**
+  - Retrying extraction on an already extracted document replaces only unreviewed `candidate` records.
+  - Records already reviewed, `accepted`, or `rejected` by human curators are strictly preserved.
+
+### Human Review Integration
+Candidate records extracted from documents are accessible via `GET /api/documents/{id}/candidates` and integrated directly into the Phase 2 review workflow (`PATCH /api/records/{id}/review`). Curators can accept, reject, or adjust values with full audit logging in `review_history`.
+
+---
+
+## 8. Implemented Endpoints
 
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/health` | Process liveness check |
-| `GET` | `/api/ready` | Subsystem readiness (`database: operational`, future ML deferred) |
+| `GET` | `/api/ready` | Subsystem readiness (`database: operational`, `extraction_engine: operational`) |
 | `GET` | `/api/schema` | Canonical schema version and full data dictionary |
+| `POST` | `/api/documents/upload` | Upload and register a research PDF with cryptographic SHA-256 hash |
+| `POST` | `/api/documents/{id}/extract` | Parse text and tables, and extract candidate experimental formulation records |
+| `GET` | `/api/documents` | List ingested literature documents |
+| `GET` | `/api/documents/{id}` | Get document ingestion metadata and extraction status |
+| `GET` | `/api/documents/{id}/candidates` | List candidate experimental records extracted from document |
 | `POST` | `/api/papers` | Register literature paper metadata |
 | `GET` | `/api/papers` | List registered papers |
 | `GET` | `/api/papers/{id}` | Get paper by identifier |
@@ -130,7 +173,7 @@ Phase 2 provides metadata persistence only (`POST /api/models`, `GET /api/models
 
 ---
 
-## 8. Running Automated Tests
+## 9. Running Automated Tests
 
 Run the complete backend test suite:
 
@@ -138,18 +181,19 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All 32 unit, integration, persistence, and schema tests run using isolated temporary SQLite databases. Real research data is never modified by test runs.
+All 43 unit, integration, persistence, schema, and extraction tests run deterministically using isolated temporary SQLite databases and synthetic in-memory PDFs. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 9. Phase Roadmap Alignment
+## 10. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
-- **Phase 3 (Deferred):** Literature PDF extraction & table parsing.
+- **Phase 3 (Completed):** Literature PDF ingestion, SHA-256 deduplication, `pdfplumber` text/table extraction, candidate record generation with provenance, idempotent retries, honest scanned PDF detection.
 - **Phase 4 (Deferred):** Scientific normalization & stoichiometric mass balance rules.
 - **Phase 5 (Deferred):** Dataset readiness profiling snapshot & EDA.
 - **Phase 6 (Deferred):** XGBoost dual-target training & evaluation.
 - **Phase 7 (Deferred):** TreeSHAP explainability engine.
 - **Phase 8 (Deferred):** Feasible mix design optimizer.
 - **Phase 9 (Deferred):** Full frontend workstation integration.
+

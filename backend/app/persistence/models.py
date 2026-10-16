@@ -33,6 +33,10 @@ def gen_model_id() -> str:
     return f"mod_{uuid.uuid4().hex[:12]}"
 
 
+def gen_document_id() -> str:
+    return f"doc_{uuid.uuid4().hex[:12]}"
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -57,6 +61,38 @@ class Paper(Base):
     records: Mapped[List["ExperimentalRecord"]] = relationship(
         "ExperimentalRecord", back_populates="paper", cascade="all, delete-orphan"
     )
+    documents: Mapped[List["Document"]] = relationship(
+        "Document", back_populates="paper", cascade="all, delete-orphan"
+    )
+
+
+class Document(Base):
+    """Ingested literature document (PDF) registry entry."""
+    __tablename__ = "documents"
+
+    document_id: Mapped[str] = mapped_column(String(100), primary_key=True, default=gen_document_id)
+    paper_id: Mapped[Optional[str]] = mapped_column(
+        String(100), ForeignKey("papers.paper_id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    original_filename: Mapped[str] = mapped_column(String(255), nullable=False)
+    stored_path: Mapped[str] = mapped_column(String(500), nullable=False)
+    file_size_bytes: Mapped[int] = mapped_column(Integer, nullable=False)
+    sha256_hash: Mapped[str] = mapped_column(String(64), nullable=False, unique=True, index=True)
+    page_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="uploaded", index=True
+    )  # uploaded | extracting | extracted | failed | scanned_image_only
+    error_message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    warning_messages: Mapped[Optional[List[str]]] = mapped_column(JSON, nullable=True)
+    extracted_pages_count: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now, onupdate=utc_now)
+
+    # Relationships
+    paper: Mapped[Optional["Paper"]] = relationship("Paper", back_populates="documents")
+    extracted_records: Mapped[List["ExperimentalRecord"]] = relationship(
+        "ExperimentalRecord", back_populates="source_document"
+    )
 
 
 class ExperimentalRecord(Base):
@@ -67,6 +103,9 @@ class ExperimentalRecord(Base):
     record_id: Mapped[str] = mapped_column(String(100), primary_key=True, default=gen_record_id)
     paper_id: Mapped[str] = mapped_column(
         String(100), ForeignKey("papers.paper_id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    document_id: Mapped[Optional[str]] = mapped_column(
+        String(100), ForeignKey("documents.document_id", ondelete="SET NULL"), nullable=True, index=True
     )
     experiment_group_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
     duplicate_group_id: Mapped[Optional[str]] = mapped_column(String(100), nullable=True, index=True)
@@ -150,6 +189,7 @@ class ExperimentalRecord(Base):
 
     # Relationships
     paper: Mapped["Paper"] = relationship("Paper", back_populates="records")
+    source_document: Mapped[Optional["Document"]] = relationship("Document", back_populates="extracted_records")
     history_events: Mapped[List["ReviewHistory"]] = relationship(
         "ReviewHistory", back_populates="record", cascade="all, delete-orphan", order_by="ReviewHistory.timestamp.desc()"
     )

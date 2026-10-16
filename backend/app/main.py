@@ -7,6 +7,7 @@ from backend.app.core.config import settings
 from backend.app.core.errors import register_error_handlers
 
 
+import os
 from backend.app.persistence.database import init_db
 
 
@@ -14,6 +15,8 @@ from backend.app.persistence.database import init_db
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Non-destructive database initialization on startup
     init_db()
+    # Ensure document storage directory exists
+    os.makedirs(settings.DOCUMENTS_STORAGE_DIR, exist_ok=True)
     yield
 
 

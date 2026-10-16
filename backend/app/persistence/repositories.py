@@ -2,13 +2,16 @@ from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from backend.app.core.config import settings
 from backend.app.persistence.models import (
     DatasetVersion,
     DatasetVersionRecord,
+    Document,
     ExperimentalRecord,
     ModelRegistryMetadata,
     Paper,
     ReviewHistory,
+    gen_document_id,
     gen_model_id,
     gen_paper_id,
     gen_record_id,
@@ -294,3 +297,98 @@ class ModelMetadataRepository:
     def list_all(db: Session) -> List[ModelRegistryMetadata]:
         stmt = select(ModelRegistryMetadata).order_by(ModelRegistryMetadata.created_at.desc())
         return list(db.scalars(stmt).all())
+
+
+class DocumentRepository:
+    @staticmethod
+    def create(db: Session, doc: Document) -> Document:
+        if not doc.document_id:
+            doc.document_id = gen_document_id()
+        db.add(doc)
+        db.commit()
+        db.refresh(doc)
+        return doc
+
+    @staticmethod
+    def get_by_id(db: Session, document_id: str) -> Optional[Document]:
+        return db.get(Document, document_id)
+
+    @staticmethod
+    def get_by_hash(db: Session, sha256_hash: str) -> Optional[Document]:
+        stmt = select(Document).where(Document.sha256_hash == sha256_hash)
+        return db.scalar(stmt)
+
+    @staticmethod
+    def list_all(
+        db: Session, paper_id: Optional[str] = None, status: Optional[str] = None, skip: int = 0, limit: int = 100
+    ) -> List[Document]:
+        stmt = select(Document)
+        if paper_id:
+            stmt = stmt.where(Document.paper_id == paper_id)
+        if status:
+            stmt = stmt.where(Document.status == status)
+        stmt = stmt.order_by(Document.created_at.desc()).offset(skip).limit(limit)
+        return list(db.scalars(stmt).all())
+
+    @staticmethod
+    def save_candidates(
+        db: Session,
+        doc: Document,
+        candidate_dicts: List[Dict[str, Any]],
+        paper_id: Optional[str] = None,
+    ) -> List[ExperimentalRecord]:
+        target_paper_id = paper_id or doc.paper_id
+        if not target_paper_id:
+            paper = Paper(
+                title=f"Extracted Paper ({doc.original_filename})",
+                authors="Extracted from source PDF",
+                material_system="fly_ash_lime_gypsum_brick",
+                notes=f"Auto-generated for uploaded document {doc.document_id}",
+            )
+            db.add(paper)
+            db.flush()
+            target_paper_id = paper.paper_id
+            doc.paper_id = target_paper_id
+
+        # Idempotent extraction retry:
+        # Find existing records for this document that are still unreviewed candidates
+        existing_stmt = select(ExperimentalRecord).where(
+            ExperimentalRecord.document_id == doc.document_id,
+            ExperimentalRecord.review_status == "candidate",
+        )
+        existing_candidates = list(db.scalars(existing_stmt).all())
+        for old_rec in existing_candidates:
+            db.delete(old_rec)
+        db.flush()
+
+        created_records: List[ExperimentalRecord] = []
+        for c in candidate_dicts:
+            rec_id = gen_record_id()
+            rec = ExperimentalRecord(
+                record_id=rec_id,
+                paper_id=target_paper_id,
+                document_id=doc.document_id,
+                schema_version=settings.CANONICAL_SCHEMA_VERSION,
+                source_title=doc.original_filename,
+                **c,
+            )
+            db.add(rec)
+            # Log creation in audit history
+            hist = ReviewHistory(
+                record_id=rec_id,
+                action="creation",
+                field_name=None,
+                previous_value=None,
+                new_value=f"status=candidate, value_origin=literature_extracted, doc_id={doc.document_id}",
+                reviewer="pdfplumber_v1",
+                reason=f"Extracted from {doc.original_filename} ({c.get('source_table_or_figure', 'text')})",
+                timestamp=datetime.now(timezone.utc),
+            )
+            db.add(hist)
+            created_records.append(rec)
+
+        db.commit()
+        for r in created_records:
+            db.refresh(r)
+        return created_records
+

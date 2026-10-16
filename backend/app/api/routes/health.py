@@ -39,7 +39,7 @@ async def get_readiness() -> ReadinessResponse:
         subsystems={
             "api_server": "operational",
             "database": db_status,
-            "extraction_engine": "deferred_phase_3",
+            "extraction_engine": "operational",
             "validation_service": "deferred_phase_4",
             "xgboost_models": "deferred_phase_6",
             "shap_explainer": "deferred_phase_7",

@@ -92,4 +92,8 @@ temp/
 *.sqlite
 *.sqlite3
 
+# Uploaded Literature PDFs
+backend/data/documents/
+backend/data/**/*.pdf
+
 PLAN.md
