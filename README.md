@@ -98,8 +98,8 @@ flowchart TD
 | **Phase 4** | Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific eligibility | **Completed** | Evidence-aware constraint checks without zero-fabrication |
 | **Phase 5** | Data readiness profiling snapshot, target comparability gates, exploratory analysis | **Completed** | Commit 8899073; feature suitability, leakage prevention, target-specific readiness gates |
 | **Phase 6** | Literature research workflow verification, empirical data readiness gate, and researcher guide | **Completed** | Commit 07026ad; end-to-end ingestion verified, researcher guide created |
-| **Phase 7** | XGBoost dual-target modeling, paper-grouped evaluation, baseline comparator, and TreeSHAP explainability | **Gate Enforced** | Pipeline implemented with paper-grouped splits & leakage guards; model training blocked on empty local database (`unsupported_insufficient_data`) |
-| **Phase 8** | Feasible mix design optimizer with constraint checks | *Deferred* | Planned |
+| **Phase 7** | XGBoost dual-target modeling, paper-grouped evaluation, baseline comparator, and TreeSHAP explainability | **Gate Enforced** | Commit c1c9ae5; pipeline implemented with paper-grouped splits & leakage guards; model training blocked on empty local database (`unsupported_insufficient_data`) |
+| **Phase 8** | Constrained formulation optimization, multi-objective Pareto ranking, and manufacturing recommendations | **Gate Enforced** | Bounded candidate search implemented; empirical optimization blocked on empty database (HTTP 503); 114 tests passing |
 | **Phase 9** | Full frontend workstation integration with live analytical endpoints | *Deferred* | Planned |
 
 ---
@@ -263,7 +263,7 @@ Run the complete backend test suite:
 ```powershell
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
-- **98 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, leakage prevention, the end-to-end research ingestion workflow, XGBoost paper-grouped cross-validation, reference mean baseline comparison, feature manifest leakage quarantine, and surrogate inference error handling.
+- **114 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, leakage prevention, the end-to-end research ingestion workflow, XGBoost paper-grouped cross-validation, reference mean baseline comparison, feature manifest leakage quarantine, surrogate inference error handling, bounded candidate search, dry mass balance enforcement, multi-objective Pareto ranking, and optimization readiness gating.
 - All tests execute deterministically against isolated temporary SQLite databases and synthetic in-memory PDFs without requiring external network connectivity.
 
 For empirical data entry and review procedures, consult the **[Researcher Data Ingestion Guide](docs/researcher_data_ingestion_guide.md)**.

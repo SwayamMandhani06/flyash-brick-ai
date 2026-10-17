@@ -153,6 +153,71 @@ export interface OptimizeResponse {
   isDemoSimulation: boolean;
 }
 
+export interface LiveCandidateFormulation {
+  candidate_id: string;
+  rank: number;
+  material_system: string;
+  mix_proportions: Record<string, number>;
+  dry_mass_sum: number;
+  water_parameter: {
+    water_content_or_ratio: number;
+    water_basis: string;
+  };
+  curing_parameters: {
+    curing_duration_days: number;
+    curing_temperature_c: number;
+  };
+  predicted_compressive_strength_mpa?: number;
+  predicted_water_absorption_pct?: number;
+  is_feasible: boolean;
+  constraint_violations: string[];
+  supported_domain_status: 'supported' | 'extrapolated' | 'unverified_no_empirical_baseline';
+  objective_score: number;
+  is_pareto_optimal: boolean;
+}
+
+export interface LiveOptimizationRequest {
+  material_system: string;
+  primary_objective: string;
+  performance_requirements: {
+    min_compressive_strength_mpa?: number;
+    max_water_absorption_pct?: number;
+  };
+  formulation_constraints?: {
+    min_fly_ash_fraction?: number;
+    max_fly_ash_fraction?: number;
+    min_lime_fraction?: number;
+    max_lime_fraction?: number;
+    min_cement_fraction?: number;
+    max_cement_fraction?: number;
+    min_gypsum_fraction?: number;
+    max_gypsum_fraction?: number;
+    min_water_content_or_ratio?: number;
+    max_water_content_or_ratio?: number;
+  };
+  max_candidates?: number;
+  top_k?: number;
+  random_seed?: number;
+}
+
+export interface LiveOptimizationResponse {
+  run_id: string;
+  status: 'completed' | 'blocked' | 'no_feasible_solution';
+  material_system: string;
+  primary_objective: string;
+  algorithm_version: string;
+  random_seed: number;
+  search_space_generated: number;
+  feasible_candidates_count: number;
+  models_used: Record<string, string>;
+  dataset_version_id?: string;
+  recommended_candidates: LiveCandidateFormulation[];
+  rejection_summary: Record<string, number>;
+  warnings: string[];
+  disclaimer: string;
+  created_at: string;
+}
+
 // ==========================================
 // 06. Model Explainability Contracts
 // ==========================================

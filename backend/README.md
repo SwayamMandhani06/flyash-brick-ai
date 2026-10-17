@@ -257,6 +257,9 @@ Readiness status is classified as:
 | `POST` | `/api/models/train` | Execute paper-grouped XGBoost training with baseline comparison (readiness gate enforced) |
 | `POST` | `/api/models/predict` | Generate surrogate prediction with input range validation (503 if untrained) |
 | `POST` | `/api/models/explain` | Generate SHAP additive feature attributions (503 if untrained) |
+| `POST` | `/api/optimization/run` | Execute constrained formulation optimization search (readiness gate enforced; 503 if unready) |
+| `GET` | `/api/optimization/runs` | List historical formulation optimization runs |
+| `GET` | `/api/optimization/runs/{id}` | Retrieve detailed optimization run results and recommendations |
 
 ---
 
@@ -274,7 +277,29 @@ Phase 7 establishes the predictive modeling engine with strict empirical-data re
 
 ---
 
-## 12. Running Automated Tests
+## 12. Constrained Formulation Optimization (Phase 8 Scope)
+
+Phase 8 implements a reproducible, bounded candidate-search framework that explores feasible manufacturing formulations under explicit material, chemical, and physical performance constraints.
+
+### Core Optimization Architecture
+- **Optimization Readiness Gate:** Search execution is strictly gated by `check_optimization_readiness`. Optimization is blocked (HTTP 503 `OPTIMIZATION_UNAVAILABLE`) unless:
+  1. Empirical database has $\ge 15$ accepted records across $\ge 3$ independent literature papers for **both** compressive strength and water absorption.
+  2. Verified, trained XGBoost models are registered and available for both targets.
+- **Material-System Separation:** FaL-G (`fly_ash_lime_gypsum_brick`) and Cement–Fly Ash (`cement_fly_ash_brick`) are maintained as separate formulation domains with distinct binder and aggregate constraints:
+  - *FaL-G System:* Enforces minimum fly ash ($f_{\text{FA}} \ge 0.40$), lime ($0.08 \le f_{\text{lime}} \le 0.25$), gypsum ($0.02 \le f_{\text{gyp}} \le 0.08$), and active binder sum ($\sum \ge 0.10$).
+  - *Cement–Fly Ash System:* Enforces cement binder ($f_{\text{cement}} \ge 0.08$) and zero lime/gypsum ($0.0$).
+- **Physics & Mass-Balance Constraints:** Dry constituent fractions must sum to $1.0 \pm 0.005$ with aggregate (sand/stone dust) acting as the slack balance. Water dosage must be physically viable ($0.10 \le w \le 0.45$).
+- **Multi-Objective Pareto Ranking:** Feasible candidates are evaluated for non-dominated Pareto optimality across compressive strength (maximize), water absorption (minimize), and fly ash utilization (maximize). Candidates are ranked via deterministic scalarization (`maximize_fly_ash`, `maximize_strength`, `minimize_water_absorption`, or `balanced_pareto`).
+- **No-Feasible-Solution Honesty:** If user performance constraints (e.g. impossible strength targets) cannot be satisfied, the optimizer returns `status="no_feasible_solution"` with an itemized `rejection_summary` without silently relaxing constraints.
+- **Extrapolation Safeguards:** Candidates are checked against training-data hyper-rectangle bounds. Full multidimensional convex-hull enforcement is not implemented; domain support is labeled as `supported`, `extrapolated`, or `unverified_no_empirical_baseline`.
+- **Reproducibility & Auditability:** Optimization runs are deterministic for a given `random_seed` and algorithm version (`v1.0.0-bounded-search`). Runs are persisted in the `optimization_runs` table with complete input configuration, model references, search budget, and results.
+
+### Enabling Empirical Optimization
+Once civil engineering researchers curate at least 15 accepted empirical records across 3 distinct papers and train XGBoost models via `POST /api/models/train`, the readiness gate automatically unlocks `POST /api/optimization/run`.
+
+---
+
+## 13. Running Automated Tests
 
 Run the complete backend test suite:
 
@@ -282,18 +307,18 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All **98 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, and XGBoost pipeline mechanics. Real research data and external networks are never required or modified by test runs.
+All **114 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, XGBoost pipeline mechanics, and constrained formulation optimization. Real research data and external networks are never required or modified by test runs.
 
 ---
 
-## 13. Researcher Data Ingestion Guide
+## 14. Researcher Data Ingestion Guide
 
 For human curators and civil engineering researchers curating empirical data from published literature, see the step-by-step operational guide:
 - **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, and Phase 6 operational readiness criteria.
 
 ---
 
-## 14. Phase Roadmap Alignment
+## 15. Phase Roadmap Alignment
 
 - **Phase 1 (Completed):** FastAPI foundation, configuration, structured errors, liveness/readiness contracts.
 - **Phase 2 (Completed):** Canonical schema `v1.0.0-canonical`, SQLite persistence, paper registry, review history, dataset snapshots, model registry metadata, synthetic data isolation.
@@ -301,7 +326,7 @@ For human curators and civil engineering researchers curating empirical data fro
 - **Phase 4 (Completed):** Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific model-readiness eligibility gate.
 - **Phase 5 (Completed):** Exploratory data analysis, feature assessment, constancy/collinearity checks, leakage prevention, and target-specific dataset readiness gates.
 - **Phase 6 (Completed):** Data readiness gate verification, end-to-end research ingestion workflow (Commit `07026ad`), and researcher ingestion guide.
-- **Phase 7 (Gate Enforced / Modeling Blocked):** XGBoost dual-target regression pipeline with paper-grouped split integrity, mean baseline comparator, leakage safeguards, SHAP explainability contracts, and inference validation. Model training blocked on empty local database (`unsupported_insufficient_data`).
-- **Phase 8 (Deferred):** Feasible mix design optimizer with constraint checks.
+- **Phase 7 (Completed):** XGBoost dual-target regression pipeline with paper-grouped split integrity, mean baseline comparator, leakage safeguards, SHAP explainability contracts, and inference validation (Commit `c1c9ae5`).
+- **Phase 8 (Gate Enforced / Optimization Blocked):** Constrained formulation optimization, multi-objective Pareto ranking, dry mass balance enforcement, and recommendation contracts. Empirical optimization blocked on empty local database (`OPTIMIZATION_UNAVAILABLE`).
 - **Phase 9 (Deferred):** Full frontend workstation integration with live analytical endpoints.
 

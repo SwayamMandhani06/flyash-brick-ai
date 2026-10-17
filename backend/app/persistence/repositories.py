@@ -14,10 +14,12 @@ from backend.app.persistence.models import (
     ValidationRun,
     ValidationFinding,
     AnalysisRun,
+    OptimizationRun,
     gen_analysis_id,
     gen_document_id,
     gen_finding_id,
     gen_model_id,
+    gen_opt_run_id,
     gen_paper_id,
     gen_record_id,
     gen_run_id,
@@ -501,5 +503,35 @@ class AnalysisRepository:
         if dataset_version_id:
             stmt = stmt.where(AnalysisRun.dataset_version_id == dataset_version_id)
         stmt = stmt.order_by(AnalysisRun.created_at.desc()).offset(skip).limit(limit)
+        return list(db.scalars(stmt).all())
+
+
+class OptimizationRepository:
+    """Persistence operations for constrained formulation optimization runs."""
+
+    @staticmethod
+    def create(db: Session, run: OptimizationRun) -> OptimizationRun:
+        if not run.run_id:
+            run.run_id = gen_opt_run_id()
+        db.add(run)
+        db.commit()
+        db.refresh(run)
+        return run
+
+    @staticmethod
+    def get_by_id(db: Session, run_id: str) -> Optional[OptimizationRun]:
+        return db.get(OptimizationRun, run_id)
+
+    @staticmethod
+    def list_runs(
+        db: Session,
+        material_system: Optional[str] = None,
+        skip: int = 0,
+        limit: int = 50,
+    ) -> List[OptimizationRun]:
+        stmt = select(OptimizationRun)
+        if material_system:
+            stmt = stmt.where(OptimizationRun.material_system == material_system)
+        stmt = stmt.order_by(OptimizationRun.created_at.desc()).offset(skip).limit(limit)
         return list(db.scalars(stmt).all())
 

@@ -2,14 +2,20 @@ import React, { useState } from 'react';
 import { AppShell } from '../components/layout/AppShell';
 import { ParetoConvergenceVisualizer } from '../components/optimization/ParetoConvergenceVisualizer';
 import type { ParetoPoint } from '../components/optimization/ParetoConvergenceVisualizer';
-import { CheckCircle2, Leaf, ShieldAlert, Sliders, Download } from 'lucide-react';
+import { CheckCircle2, Leaf, ShieldAlert, Sliders, Download, RefreshCw } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { optimizationService } from '../lib/api/services';
+import type { LiveOptimizationResponse } from '../lib/api/types';
 
 export const OptimizationPage: React.FC = () => {
   const [minStrength, setMinStrength] = useState<number>(15);
   const [maxAbsorption, setMaxAbsorption] = useState<number>(12);
   const [objective, setObjective] = useState<'waste' | 'cost' | 'speed'>('waste');
   const [selectedMixId, setSelectedMixId] = useState<string>('OPT-01');
+  const [materialSystem, setMaterialSystem] = useState<string>('fly_ash_lime_gypsum_brick');
+  const [isLiveRunning, setIsLiveRunning] = useState<boolean>(false);
+  const [liveReadinessError, setLiveReadinessError] = useState<string | null>(null);
+  const [liveResult, setLiveResult] = useState<LiveOptimizationResponse | null>(null);
 
   const candidates = [
     {
@@ -125,6 +131,33 @@ PREDICTED PERFORMANCE:
     setTimeout(() => setExportNotice(null), 4000);
   };
 
+  const handleRunLiveOptimization = async () => {
+    setIsLiveRunning(true);
+    setLiveReadinessError(null);
+    try {
+      const res = await optimizationService.runLiveOptimization({
+        material_system: materialSystem,
+        primary_objective: objective === 'waste' ? 'maximize_fly_ash' : objective === 'cost' ? 'minimize_water_absorption' : 'maximize_strength',
+        performance_requirements: {
+          min_compressive_strength_mpa: minStrength,
+          max_water_absorption_pct: maxAbsorption,
+        },
+        max_candidates: 200,
+        random_seed: 42,
+      });
+      setLiveResult(res);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : String(err);
+      setLiveReadinessError(
+        errMsg.includes('503') || errMsg.includes('OPTIMIZATION_UNAVAILABLE')
+          ? 'OPTIMIZATION_UNAVAILABLE: Model training and empirical optimization are strictly blocked because the active local empirical corpus contains 0 accepted records. Under PLAN.md Section 12 & 15, empirical optimization cannot execute without verified empirical models. Literature research papers must be curated and accepted via the Research Workflow to unlock empirical training.'
+          : `Optimization request failed: ${errMsg}`
+      );
+    } finally {
+      setIsLiveRunning(false);
+    }
+  };
+
   return (
     <AppShell
       title="04. Manufacturing Mix Optimizer Workstation"
@@ -132,6 +165,15 @@ PREDICTED PERFORMANCE:
       badge="Optimization Workstation"
       actions={
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <Button
+            variant="primary"
+            size="sm"
+            icon={<RefreshCw size={14} className={isLiveRunning ? 'animate-spin' : ''} />}
+            onClick={handleRunLiveOptimization}
+            disabled={isLiveRunning}
+          >
+            {isLiveRunning ? 'Evaluating...' : 'Run Live Optimizer'}
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -143,6 +185,89 @@ PREDICTED PERFORMANCE:
         </div>
       }
     >
+      {liveReadinessError && (
+        <div
+          style={{
+            padding: 'var(--space-4) var(--space-5)',
+            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.25)',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: 'var(--space-6)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+            fontSize: '0.84rem',
+            color: 'var(--text-primary)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, color: '#ef4444' }}>
+              <ShieldAlert size={18} color="#ef4444" />
+              Empirical Optimization Gate Active (HTTP 503 Service Unavailable)
+            </span>
+            <button
+              onClick={() => setLiveReadinessError(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            >
+              &times;
+            </button>
+          </div>
+          <p style={{ margin: 0, fontSize: '0.8rem', lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+            {liveReadinessError}
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'var(--space-3)', marginTop: '4px' }}>
+            <span className="badge badge-subtle font-mono" style={{ fontSize: '0.72rem' }}>
+              Active Empirical Records: 0
+            </span>
+            <span className="badge badge-subtle font-mono" style={{ fontSize: '0.72rem' }}>
+              Readiness Threshold: ≥ 15 Records / ≥ 3 Papers
+            </span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-primary)', fontWeight: 600 }}>
+              Curate literature records in Research Workflow to unlock empirical training.
+            </span>
+          </div>
+        </div>
+      )}
+      {liveResult && (
+        <div
+          style={{
+            padding: 'var(--space-4) var(--space-5)',
+            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+            border: '1px solid rgba(16, 185, 129, 0.25)',
+            borderRadius: 'var(--radius-md)',
+            marginBottom: 'var(--space-6)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)',
+            fontSize: '0.84rem',
+            color: 'var(--text-primary)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, color: '#10b981' }}>
+              <CheckCircle2 size={18} color="#10b981" />
+              Live Formulation Optimization Completed — {liveResult.feasible_candidates_count} Feasible Candidates
+            </span>
+            <button
+              onClick={() => setLiveResult(null)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}
+            >
+              &times;
+            </button>
+          </div>
+          <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            Search evaluated {liveResult.search_space_generated} vectors across {liveResult.material_system} under algorithm {liveResult.algorithm_version} (Seed: {liveResult.random_seed}).
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', marginTop: '4px' }}>
+            <span className="badge badge-emerald font-mono" style={{ fontSize: '0.72rem' }}>
+              Status: {liveResult.status}
+            </span>
+            <span className="badge badge-subtle font-mono" style={{ fontSize: '0.72rem' }}>
+              Top Candidates: {liveResult.recommended_candidates.length}
+            </span>
+          </div>
+        </div>
+      )}
       {exportNotice && (
         <div
           style={{
@@ -228,6 +353,33 @@ PREDICTED PERFORMANCE:
             gap: 'var(--space-5)',
           }}
         >
+          {/* Material System Selection */}
+          <div>
+            <span className="editorial-eyebrow" style={{ fontSize: '0.68rem' }}>FORMULATION SYSTEM</span>
+            <label style={{ display: 'block', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '4px', marginBottom: '6px' }}>
+              Material System
+            </label>
+            <select
+              value={materialSystem}
+              onChange={(e) => setMaterialSystem(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'var(--bg-surface-subtle)',
+                border: '1px solid var(--border-hairline)',
+                color: 'var(--text-primary)',
+                fontSize: '0.82rem',
+                fontWeight: 500,
+              }}
+            >
+              <option value="fly_ash_lime_gypsum_brick">Fly Ash–Lime–Gypsum (FaL-G Brick)</option>
+              <option value="cement_fly_ash_brick">Cement–Fly Ash Brick</option>
+            </select>
+          </div>
+
+          <div className="hairline-divider" />
+
           <div>
             <span className="editorial-eyebrow" style={{ fontSize: '0.68rem' }}>SEARCH OBJECTIVES</span>
             <h3 style={{ fontSize: '1.18rem', fontWeight: 700, marginTop: '2px', color: 'var(--text-primary)' }}>

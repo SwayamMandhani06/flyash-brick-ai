@@ -49,6 +49,10 @@ def gen_analysis_id() -> str:
     return f"eda_{uuid.uuid4().hex[:12]}"
 
 
+def gen_opt_run_id() -> str:
+    return f"opt_{uuid.uuid4().hex[:12]}"
+
+
 class Base(DeclarativeBase):
     pass
 
@@ -363,4 +367,32 @@ class AnalysisRun(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
     # Relationships
+    dataset_version: Mapped[Optional["DatasetVersion"]] = relationship("DatasetVersion")
+
+
+class OptimizationRun(Base):
+    """Persisted record of a constrained formulation optimization run."""
+    __tablename__ = "optimization_runs"
+
+    run_id: Mapped[str] = mapped_column(String(64), primary_key=True, default=gen_opt_run_id)
+    material_system: Mapped[str] = mapped_column(String(100), nullable=False)
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="completed")  # completed | blocked | no_feasible_solution
+    primary_objective: Mapped[str] = mapped_column(String(64), nullable=False)
+    algorithm_version: Mapped[str] = mapped_column(String(32), nullable=False, default="v1.0.0-bounded-search")
+    random_seed: Mapped[int] = mapped_column(Integer, nullable=False, default=42)
+    performance_requirements: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    formulation_constraints: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    models_used: Mapped[Dict[str, Any]] = mapped_column(JSON, nullable=False)
+    dataset_version_id: Mapped[Optional[str]] = mapped_column(
+        String(64), ForeignKey("dataset_versions.version_id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    search_space_generated: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    feasible_candidates_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    recommended_candidates: Mapped[List[Dict[str, Any]]] = mapped_column(JSON, nullable=False)
+    rejection_summary: Mapped[Dict[str, int]] = mapped_column(JSON, nullable=False)
+    warnings: Mapped[List[str]] = mapped_column(JSON, nullable=False)
+    disclaimer: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+    # Relationship
     dataset_version: Mapped[Optional["DatasetVersion"]] = relationship("DatasetVersion")

@@ -18,6 +18,8 @@ import type {
   PredictResponse,
   OptimizeRequest,
   OptimizeResponse,
+  LiveOptimizationRequest,
+  LiveOptimizationResponse,
   ExplainRequest,
   ExplainResponse,
 } from './types';
@@ -289,6 +291,10 @@ export const optimizationService = {
       solverType: 'NSGA-II Multi-Objective Evolutionary Algorithm (Demo)',
       isDemoSimulation: true,
     };
+  },
+
+  async runLiveOptimization(request: LiveOptimizationRequest): Promise<LiveOptimizationResponse> {
+    return apiClient.post<LiveOptimizationRequest, LiveOptimizationResponse>('/api/optimization/run', request);
   },
 };
 
