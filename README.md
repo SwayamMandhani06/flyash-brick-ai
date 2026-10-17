@@ -97,9 +97,9 @@ flowchart TD
 | **Phase 3** | PDF ingestion, SHA-256 deduplication, path-traversal prevention, `pdfplumber` text/table parsing, candidate records with provenance, idempotent retries | **Completed** | 43 backend tests passing, scanned PDF detection |
 | **Phase 4** | Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific eligibility | **Completed** | Evidence-aware constraint checks without zero-fabrication |
 | **Phase 5** | Data readiness profiling snapshot, target comparability gates, exploratory analysis | **Completed** | Commit 8899073; feature suitability, leakage prevention, target-specific readiness gates |
-| **Phase 8** | Constrained formulation optimization, multi-objective Pareto ranking, and manufacturing recommendations | **Completed** | Commit 6852572; bounded candidate search implemented; empirical optimization blocked on empty database (HTTP 503) |
-| **Phase 9** | End-to-end integration, safe model loading, and scientific safeguard audit | **Completed** | Commit 8f102b5; verified full workflow integrity, model loading fallback isolation, and scientific consistency |
-| **Phase 10** | Research data curation, dataset readiness, and empirical modeling activation | **Implemented** | Documented CSV curation template, batch literature ingestion with researcher attribution, duplicate detection, and live actionable readiness diagnostics |
+| **Phase 10** | Research data curation, dataset readiness, and empirical modeling activation | **Completed** | Commit 714937f; CSV curation template, batch literature ingestion with researcher attribution, duplicate detection, and live actionable readiness diagnostics |
+| **Phase 11** | Empirical data activation, model readiness validation, deployment & reproducibility | **Implemented** | Comprehensive deployment runbook (`docs/deployment.md`), CLI smoke check script (`scripts/deployment_smoke_check.py`), automated test suite (137 tests), and fail-closed readiness gates |
+
 
 ---
 
@@ -262,10 +262,15 @@ Run the complete backend test suite:
 ```powershell
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
-- **128 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, leakage prevention, the end-to-end research ingestion workflow, XGBoost paper-grouped cross-validation, reference mean baseline comparison, feature manifest leakage quarantine, surrogate inference error handling, bounded candidate search, dry mass balance enforcement, multi-objective Pareto ranking, optimization readiness gating, batch CSV curation, template placeholder rejection, and live actionable readiness diagnostics.
+- **137 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, leakage prevention, the end-to-end research ingestion workflow, XGBoost paper-grouped cross-validation, reference mean baseline comparison, feature manifest leakage quarantine, surrogate inference error handling, bounded candidate search, dry mass balance enforcement, multi-objective Pareto ranking, optimization readiness gating, batch CSV curation, template placeholder rejection, live actionable readiness diagnostics, deployment health/readiness contracts, persistence idempotency, and fail-closed readiness gates.
 - All tests execute deterministically against isolated temporary SQLite databases and synthetic in-memory PDFs without requiring external network connectivity.
 
-For empirical data entry and review procedures, consult the **[Researcher Data Ingestion Guide](docs/researcher_data_ingestion_guide.md)**.
+For empirical data entry and review procedures, consult the **[Researcher Data Ingestion Guide](docs/researcher_data_ingestion_guide.md)**. For production deployment, persistence guarantees, backup procedures, and smoke testing, consult the **[Deployment & Reproducibility Guide](docs/deployment.md)**.
+
+Run the automated deployment smoke check utility:
+```powershell
+.\backend\.venv\Scripts\python.exe scripts\deployment_smoke_check.py --client
+```
 
 Run frontend regression checks:
 ```powershell

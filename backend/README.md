@@ -307,14 +307,19 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All **128 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, XGBoost pipeline mechanics, constrained formulation optimization, end-to-end integration, CSV curation batch ingestion, template placeholder rejection, and live target-readiness diagnostics. Real research data and external networks are never required or modified by test runs.
+All **137 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, XGBoost pipeline mechanics, constrained formulation optimization, end-to-end integration, CSV curation batch ingestion, template placeholder rejection, live target-readiness diagnostics, deployment health/readiness contracts, database persistence idempotency, and fail-closed readiness gates. Real research data and external networks are never required or modified by test runs.
+
+Run the automated deployment smoke check utility:
+```powershell
+.\backend\.venv\Scripts\python.exe scripts\deployment_smoke_check.py --client
+```
 
 ---
 
-## 14. Researcher Data Ingestion Guide
+## 14. Operational Documentation & Guides
 
-For human curators and civil engineering researchers curating empirical data from published literature, see the step-by-step operational guide:
 - **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, batch CSV ingestion protocol, and Phase 6/10 operational readiness criteria.
+- **[Deployment & Reproducibility Guide](../docs/deployment.md)**: Deployment targets, configuration, persistence guarantees, live backup/restore runbook, smoke check execution, and fail-closed scientific gate behaviors.
 
 ---
 
@@ -329,4 +334,5 @@ For human curators and civil engineering researchers curating empirical data fro
 - **Phase 7 (Completed):** XGBoost dual-target regression pipeline with paper-grouped split integrity, mean baseline comparator, leakage safeguards, SHAP explainability contracts, and inference validation (Commit `c1c9ae5`).
 - **Phase 8 (Completed):** Constrained formulation optimization, multi-objective Pareto ranking, dry mass balance enforcement, and recommendation contracts. Empirical optimization blocked on empty local database (`OPTIMIZATION_UNAVAILABLE`) (Commit `6852572`).
 - **Phase 9 (Completed):** End-to-end integration hardening, safe model loading with mock fallback isolation, and scientific safeguards across literature ingestion, XGBoost modeling, and constrained optimization (Commit `8f102b5`).
-- **Phase 10 (Implemented):** Research Data Curation, Dataset Readiness, and Empirical Modeling Activation. Features documented CSV curation template generation, batch CSV literature ingestion with mandatory researcher attribution, provenance citation tracking, null preservation, non-destructive duplicate detection, and live actionable readiness diagnostics.
+- **Phase 10 (Completed):** Research Data Curation, Dataset Readiness, and Empirical Modeling Activation (Commit `714937f`). Features documented CSV curation template generation, batch CSV literature ingestion with mandatory researcher attribution, provenance citation tracking, null preservation, non-destructive duplicate detection, and live actionable readiness diagnostics.
+- **Phase 11 (Implemented):** Empirical Data Activation, Model Readiness Validation, Deployment & Reproducibility. Comprehensive deployment runbook (`docs/deployment.md`), CLI smoke check runner (`scripts/deployment_smoke_check.py`), automated deployment test suite (`backend/tests/test_deployment_and_smoke.py`), verified live empirical database state (0 papers, 0 accepted records), and fail-closed security gates.
