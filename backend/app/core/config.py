@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     CANONICAL_SCHEMA_VERSION: str = "v1.0.0-canonical"
     MAX_UPLOAD_SIZE_BYTES: int = 15 * 1024 * 1024  # 15 MB
     DOCUMENTS_STORAGE_DIR: str = "backend/data/documents"
+    MODELS_STORAGE_DIR: str = "backend/data/models"
     CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",

@@ -1,10 +1,15 @@
+from datetime import datetime, timezone
 import math
-from typing import Any, Dict, List, Optional, Set, Tuple
+import os
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 import numpy as np
+
+from backend.app.core.config import settings
 
 try:
     import xgboost as xgb
     import shap
+    import joblib
     from sklearn.model_selection import GroupKFold
     ML_AVAILABLE = True
 except ImportError:
@@ -13,6 +18,11 @@ except ImportError:
 
 class DataReadinessGateError(Exception):
     """Raised when model training is attempted on an unready empirical corpus."""
+    pass
+
+
+class ModelArtifactError(Exception):
+    """Raised when loading or validating a model artifact fails."""
     pass
 
 
@@ -324,3 +334,157 @@ def evaluate_paper_grouped_xgboost(
         "final_model": final_model,
         "final_preprocessor": final_preprocessor,
     }
+
+
+def save_model_pipeline(
+    artifact_path: str,
+    model: Any,
+    preprocessor: TrainingFoldPreprocessor,
+    metadata: Optional[Dict[str, Any]] = None,
+) -> str:
+    """Safely serializes and saves trained model and its exact preprocessing pipeline.
+
+    Includes target property, feature manifest, algorithm, version, and creation timestamp.
+    """
+    if not ML_AVAILABLE:
+        raise RuntimeError("ML libraries are not installed.")
+
+    meta = metadata or {}
+    parent_dir = os.path.dirname(os.path.abspath(artifact_path))
+    os.makedirs(parent_dir, exist_ok=True)
+
+    bundle = {
+        "model": model,
+        "preprocessor": preprocessor,
+        "target_property": meta.get("target_property"),
+        "target_unit": meta.get("target_unit"),
+        "algorithm": meta.get("algorithm", "XGBoost"),
+        "model_version": meta.get("model_version", "v1.0.0"),
+        "material_system": meta.get("material_system", "fly_ash_lime_gypsum_brick"),
+        "feature_manifest": getattr(preprocessor, "feature_manifest", APPROVED_PREDICTOR_MANIFEST),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+
+    joblib.dump(bundle, artifact_path)
+    return artifact_path
+
+
+def sanitize_and_resolve_model_path(
+    artifact_path: str,
+    allowed_dir: Optional[str] = None,
+) -> str:
+    """Validates that artifact_path resides safely within the allowed directory and exists.
+
+    Guards against path traversal and arbitrary filesystem loading.
+    """
+    if not artifact_path or not str(artifact_path).strip():
+        raise ModelArtifactError("EMPTY_ARTIFACT_PATH: Model artifact path cannot be empty.")
+
+    base_dir = os.path.abspath(allowed_dir or settings.MODELS_STORAGE_DIR)
+
+    # Resolve candidate path
+    clean_path = str(artifact_path).strip().replace("\\", "/")
+    if os.path.isabs(clean_path):
+        resolved_path = os.path.abspath(clean_path)
+    else:
+        # Check if clean_path is relative to cwd and within base_dir
+        cwd_resolved = os.path.abspath(clean_path)
+        try:
+            if os.path.commonpath([base_dir, cwd_resolved]) == base_dir and cwd_resolved != base_dir:
+                resolved_path = cwd_resolved
+            else:
+                resolved_path = os.path.abspath(os.path.join(base_dir, clean_path))
+        except ValueError:
+            resolved_path = os.path.abspath(os.path.join(base_dir, clean_path))
+
+    # Path traversal check
+    try:
+        common = os.path.commonpath([base_dir, resolved_path])
+        if common != base_dir or resolved_path == base_dir:
+            raise ModelArtifactError(
+                f"PATH_TRAVERSAL_DETECTED: Model artifact path '{artifact_path}' is outside designated directory '{base_dir}'."
+            )
+    except ValueError:
+        raise ModelArtifactError(
+            f"PATH_TRAVERSAL_DETECTED: Model artifact path '{artifact_path}' is outside designated directory '{base_dir}'."
+        )
+
+    if not os.path.exists(resolved_path) or not os.path.isfile(resolved_path):
+        raise ModelArtifactError(
+            f"ARTIFACT_NOT_FOUND: Model artifact file '{artifact_path}' does not exist on disk."
+        )
+
+    return resolved_path
+
+
+def load_model_pipeline(
+    artifact_path: str,
+    expected_target: Optional[str] = None,
+    expected_material_system: Optional[str] = None,
+    allowed_dir: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Safely loads and verifies a model artifact bundle.
+
+    Verifies existence, path safety, deserialization integrity, target identity,
+    and preprocessing capability.
+    """
+    resolved_path = sanitize_and_resolve_model_path(artifact_path, allowed_dir=allowed_dir)
+
+    try:
+        bundle = joblib.load(resolved_path)
+    except Exception as e:
+        raise ModelArtifactError(
+            f"CORRUPT_ARTIFACT: Failed to deserialize model artifact from '{artifact_path}': {e}"
+        )
+
+    if not isinstance(bundle, dict):
+        raise ModelArtifactError(
+            f"INVALID_ARTIFACT_STRUCTURE: Expected dictionary bundle, got {type(bundle).__name__}."
+        )
+
+    if "model" not in bundle or "preprocessor" not in bundle:
+        raise ModelArtifactError(
+            "INCOMPLETE_ARTIFACT: Bundle missing required 'model' or 'preprocessor' components."
+        )
+
+    model = bundle["model"]
+    preprocessor = bundle["preprocessor"]
+
+    if not hasattr(model, "predict"):
+        raise ModelArtifactError(
+            f"INVALID_MODEL: Deserialized model object '{type(model).__name__}' lacks a 'predict' method."
+        )
+
+    if not hasattr(preprocessor, "transform"):
+        raise ModelArtifactError(
+            f"INVALID_PREPROCESSOR: Deserialized preprocessor object '{type(preprocessor).__name__}' lacks a 'transform' method."
+        )
+
+    if expected_target:
+        bundle_target = bundle.get("target_property")
+        if bundle_target and bundle_target != expected_target:
+            raise ModelArtifactError(
+                f"TARGET_MISMATCH: Artifact target '{bundle_target}' does not match expected target '{expected_target}'."
+            )
+
+    if expected_material_system:
+        bundle_system = bundle.get("material_system")
+        if bundle_system and bundle_system != expected_material_system:
+            raise ModelArtifactError(
+                f"MATERIAL_SYSTEM_MISMATCH: Artifact material system '{bundle_system}' does not match requested system '{expected_material_system}'."
+            )
+
+    return bundle
+
+
+def make_pipeline_predictor(bundle: Dict[str, Any]) -> Callable[[Dict[str, Any]], float]:
+    """Wraps a loaded pipeline bundle into a deterministic scalar predictor callable."""
+    model = bundle["model"]
+    preprocessor = bundle["preprocessor"]
+
+    def predictor(input_dict: Dict[str, Any]) -> float:
+        X_arr = preprocessor.transform([input_dict])
+        preds = model.predict(X_arr)
+        return float(preds[0])
+
+    return predictor

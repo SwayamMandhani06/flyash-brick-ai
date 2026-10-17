@@ -1,11 +1,12 @@
 import os
 from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+import numpy as np
 from sqlalchemy.orm import Session
 
 from backend.app.core.config import settings
 from backend.app.persistence.database import get_db
-from backend.app.persistence.models import ModelRegistryMetadata
+from backend.app.persistence.models import ModelRegistryMetadata, gen_model_id
 from backend.app.persistence.repositories import (
     DatasetVersionRepository,
     ModelMetadataRepository,
@@ -22,8 +23,18 @@ from backend.app.schemas.prediction import (
 from backend.app.services.xgboost_pipeline import (
     APPROVED_PREDICTOR_MANIFEST,
     DataReadinessGateError,
+    ML_AVAILABLE,
+    ModelArtifactError,
     evaluate_paper_grouped_xgboost,
+    load_model_pipeline,
+    make_pipeline_predictor,
+    save_model_pipeline,
 )
+
+try:
+    import shap
+except ImportError:
+    shap = None
 
 router = APIRouter(prefix="/models", tags=["Model Registry & Inference"])
 
@@ -107,8 +118,46 @@ def train_model(payload: ModelTrainingRequest, db: Session = Depends(get_db)) ->
             detail=f"MODEL_TRAINING_FAILED: {e}",
         )
 
-    # Clean out non-serializable objects from response
+    # Clean out non-serializable objects and persist model pipeline artifact
+    model_id = gen_model_id()
+    artifact_filename = f"{model_id}.joblib"
+    artifact_path = os.path.join(settings.MODELS_STORAGE_DIR, artifact_filename).replace("\\", "/")
+
+    save_model_pipeline(
+        artifact_path=artifact_path,
+        model=results["final_model"],
+        preprocessor=results["final_preprocessor"],
+        metadata={
+            "target_property": payload.target_property,
+            "target_unit": "MPa" if payload.target_property == "compressive_strength_mpa" else "%",
+            "algorithm": "XGBoost",
+            "model_version": f"v1.0.0-{payload.target_property[:4]}",
+            "material_system": "fly_ash_lime_gypsum_brick",
+        },
+    )
+
+    model_meta = ModelRegistryMetadata(
+        model_id=model_id,
+        target_property=payload.target_property,
+        target_unit="MPa" if payload.target_property == "compressive_strength_mpa" else "%",
+        algorithm="XGBoost",
+        model_version=f"v1.0.0-{payload.target_property[:4]}",
+        dataset_version_id=payload.dataset_version_id,
+        feature_manifest=results["feature_manifest"],
+        hyperparameters=results["hyperparameters"],
+        evaluation_metrics=results["xgboost_summary"],
+        artifact_path=artifact_path,
+        is_trained=True,
+        training_notes=(
+            f"Paper-grouped XGBoost model trained on {results['total_samples']} samples "
+            f"across {results['distinct_papers_count']} papers via {results['split_strategy']}."
+        ),
+    )
+    ModelMetadataRepository.create(db, model_meta)
+
     serializable_results = {k: v for k, v in results.items() if k not in {"final_model", "final_preprocessor"}}
+    serializable_results["model_id"] = model_id
+    serializable_results["artifact_path"] = artifact_path
     return serializable_results
 
 
@@ -165,11 +214,30 @@ def predict_quality(
             ),
         )
 
-    # When a model is trained and available:
+    if not model_meta.artifact_path:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"MODEL_UNAVAILABLE: Model artifact path unconfigured for model '{model_meta.model_id}'.",
+        )
+
+    # 3. Load model artifact safely and execute inference
+    try:
+        bundle = load_model_pipeline(
+            artifact_path=model_meta.artifact_path,
+            expected_target=target_property,
+        )
+        predictor = make_pipeline_predictor(bundle)
+        pred_value = round(predictor(input_data.model_dump()), 2)
+    except ModelArtifactError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"MODEL_ARTIFACT_ERROR: {e}",
+        )
+
     target_unit = "MPa" if target_property == "compressive_strength_mpa" else "%"
     return PredictionOutput(
         target_property=target_property,
-        predicted_value=12.5,  # Placeholder when model artifact is loaded
+        predicted_value=pred_value,
         target_unit=target_unit,
         model_id=model_meta.model_id,
         model_version=model_meta.model_version,
@@ -204,12 +272,69 @@ def explain_prediction(
             ),
         )
 
+    if not model_meta.artifact_path:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"MODEL_UNAVAILABLE: Model artifact path unconfigured for model '{model_meta.model_id}'.",
+        )
+
+    try:
+        bundle = load_model_pipeline(
+            artifact_path=model_meta.artifact_path,
+            expected_target=target_property,
+        )
+    except ModelArtifactError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"MODEL_ARTIFACT_ERROR: {e}",
+        )
+
     target_unit = "MPa" if target_property == "compressive_strength_mpa" else "%"
+
+    preprocessor = bundle["preprocessor"]
+    model = bundle["model"]
+    X_dict = input_data.model_dump()
+    X_arr = preprocessor.transform([X_dict])
+    pred_value = round(float(model.predict(X_arr)[0]), 2)
+
+    attributions: List[FeatureAttribution] = []
+    baseline_mean = 10.0
+
+    if ML_AVAILABLE and shap is not None and hasattr(shap, "TreeExplainer"):
+        try:
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(X_arr)
+            exp_val = explainer.expected_value
+            if isinstance(exp_val, (list, np.ndarray)):
+                baseline_mean = round(float(exp_val[0]), 2)
+            else:
+                baseline_mean = round(float(exp_val), 2)
+
+            features = getattr(preprocessor, "feature_manifest", APPROVED_PREDICTOR_MANIFEST)
+            row_shaps = shap_values[0]
+            for f_name, sv in zip(features, row_shaps):
+                val = float(sv)
+                direction = "positive" if val > 0.001 else ("negative" if val < -0.001 else "neutral")
+                attributions.append(
+                    FeatureAttribution(
+                        feature_name=f_name,
+                        feature_value=float(X_dict.get(f_name) or 0.0),
+                        attribution_value=round(val, 4),
+                        direction=direction,
+                        description=(
+                            f"{'Increases' if val > 0 else ('Decreases' if val < 0 else 'Neutral impact on')} "
+                            f"predicted {target_property} by {abs(val):.3f} {target_unit}"
+                        ),
+                    )
+                )
+        except Exception:
+            pass
+
     return ExplanationOutput(
         target_property=target_property,
-        predicted_value=12.5,
+        predicted_value=pred_value,
         target_unit=target_unit,
-        baseline_mean=10.0,
-        attributions=[],
+        baseline_mean=baseline_mean,
+        attributions=attributions,
         method="TreeSHAP",
     )

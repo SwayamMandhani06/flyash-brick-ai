@@ -20,6 +20,11 @@ from backend.app.services.optimization_service import (
     UnsupportedMaterialSystemError,
     check_optimization_readiness,
 )
+from backend.app.services.xgboost_pipeline import (
+    ModelArtifactError,
+    load_model_pipeline,
+    make_pipeline_predictor,
+)
 
 router = APIRouter(prefix="/optimization", tags=["Constrained Formulation Optimization"])
 
@@ -53,19 +58,41 @@ def run_optimization_endpoint(
             detail=str(e),
         )
 
-    # 2. When trained models are available, build surrogate predictors
-    # Note: When models are present in database and artifact directory, we load them.
-    # Otherwise, this branch is unreachable due to the readiness gate above.
-    def surrogate_strength(x: Dict[str, Any]) -> float:
-        return 15.0
+    # 2. When trained models are available, safely load the registered model artifacts
+    if not strength_model or not strength_model.artifact_path:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="MODEL_UNAVAILABLE: Compressive strength model artifact path is unconfigured or unregistered.",
+        )
+    if not absorption_model or not absorption_model.artifact_path:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="MODEL_UNAVAILABLE: Water absorption model artifact path is unconfigured or unregistered.",
+        )
 
-    def surrogate_absorption(x: Dict[str, Any]) -> float:
-        return 11.5
+    try:
+        strength_bundle = load_model_pipeline(
+            artifact_path=strength_model.artifact_path,
+            expected_target="compressive_strength_mpa",
+            expected_material_system=payload.material_system,
+        )
+        absorption_bundle = load_model_pipeline(
+            artifact_path=absorption_model.artifact_path,
+            expected_target="water_absorption_pct",
+            expected_material_system=payload.material_system,
+        )
+        strength_predictor = make_pipeline_predictor(strength_bundle)
+        absorption_predictor = make_pipeline_predictor(absorption_bundle)
+    except ModelArtifactError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"MODEL_ARTIFACT_ERROR: {e}",
+        )
 
     optimizer = ConstrainedMixOptimizer(
         request=payload,
-        strength_predictor=surrogate_strength,
-        absorption_predictor=surrogate_absorption,
+        strength_predictor=strength_predictor,
+        absorption_predictor=absorption_predictor,
     )
     result = optimizer.run_optimization()
 
