@@ -307,14 +307,14 @@ Run the complete backend test suite:
 .\backend\.venv\Scripts\pytest.exe backend\tests -v
 ```
 
-All **114 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, XGBoost pipeline mechanics, and constrained formulation optimization. Real research data and external networks are never required or modified by test runs.
+All **128 automated tests** execute deterministically using isolated temporary SQLite databases, synthetic in-memory PDFs, and mock fixtures. Tests cover configuration, CORS, errors, persistence, paper registry, review history, dataset snapshots, PDF extraction, scientific validation, EDA readiness gates, research workflows, XGBoost pipeline mechanics, constrained formulation optimization, end-to-end integration, CSV curation batch ingestion, template placeholder rejection, and live target-readiness diagnostics. Real research data and external networks are never required or modified by test runs.
 
 ---
 
 ## 14. Researcher Data Ingestion Guide
 
 For human curators and civil engineering researchers curating empirical data from published literature, see the step-by-step operational guide:
-- **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, and Phase 6 operational readiness criteria.
+- **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, batch CSV ingestion protocol, and Phase 6/10 operational readiness criteria.
 
 ---
 
@@ -327,6 +327,6 @@ For human curators and civil engineering researchers curating empirical data fro
 - **Phase 5 (Completed):** Exploratory data analysis, feature assessment, constancy/collinearity checks, leakage prevention, and target-specific dataset readiness gates.
 - **Phase 6 (Completed):** Data readiness gate verification, end-to-end research ingestion workflow (Commit `07026ad`), and researcher ingestion guide.
 - **Phase 7 (Completed):** XGBoost dual-target regression pipeline with paper-grouped split integrity, mean baseline comparator, leakage safeguards, SHAP explainability contracts, and inference validation (Commit `c1c9ae5`).
-- **Phase 8 (Gate Enforced / Optimization Blocked):** Constrained formulation optimization, multi-objective Pareto ranking, dry mass balance enforcement, and recommendation contracts. Empirical optimization blocked on empty local database (`OPTIMIZATION_UNAVAILABLE`).
-- **Phase 9 (Deferred):** Full frontend workstation integration with live analytical endpoints.
-
+- **Phase 8 (Completed):** Constrained formulation optimization, multi-objective Pareto ranking, dry mass balance enforcement, and recommendation contracts. Empirical optimization blocked on empty local database (`OPTIMIZATION_UNAVAILABLE`) (Commit `6852572`).
+- **Phase 9 (Completed):** End-to-end integration hardening, safe model loading with mock fallback isolation, and scientific safeguards across literature ingestion, XGBoost modeling, and constrained optimization (Commit `8f102b5`).
+- **Phase 10 (Implemented):** Research Data Curation, Dataset Readiness, and Empirical Modeling Activation. Features documented CSV curation template generation, batch CSV literature ingestion with mandatory researcher attribution, provenance citation tracking, null preservation, non-destructive duplicate detection, and live actionable readiness diagnostics.

@@ -703,6 +703,51 @@ class EDAService:
                     "Model applicability strictly bounded to tested material systems and formulation ranges."
                 )
 
+            # Evaluate explicit unmet readiness criteria
+            unmet_criteria: List[str] = []
+            if distinct_papers_n < min_papers:
+                unmet_criteria.append(
+                    f"Paper Diversity: {distinct_papers_n}/{min_papers} independent publications (minimum {min_papers} required for GroupKFold)."
+                )
+            if sample_count < min_samples:
+                unmet_criteria.append(
+                    f"Sample Volume: {sample_count}/{min_samples} accepted empirical records (minimum {min_samples} required for provisional evaluation)."
+                )
+
+            # Determine actionable next corrective step
+            if sample_count == 0 or distinct_papers_n == 0:
+                next_action = f"Ingest and curate authentic research publications containing experimental {target_display} measurements via the literature PDF pipeline or curated CSV import."
+            elif distinct_papers_n < min_papers:
+                next_action = f"Curate experimental records from at least {min_papers - distinct_papers_n} additional independent publication(s) to enable grouped evaluation."
+            elif sample_count < min_samples:
+                next_action = f"Curate and accept at least {min_samples - sample_count} additional verified empirical record(s) from existing or new publications."
+            elif sample_count < 30 or distinct_papers_n < 5:
+                next_action = "Provisional readiness threshold met. Freeze an immutable dataset snapshot to evaluate preliminary models, or curate additional publications to reach full readiness (30 samples, 5 papers)."
+            else:
+                next_action = "Corpus meets full readiness criteria. Freeze an immutable dataset version snapshot to initiate paper-grouped XGBoost training."
+
+            # Unit and mix-basis issues
+            unit_basis_issues: List[str] = []
+            non_standard_basis = [r for r in valid_recs if getattr(r, "mix_basis", "") not in ("dry_mass_fraction", "percentage")]
+            if non_standard_basis:
+                unit_basis_issues.append(f"{len(non_standard_basis)} record(s) use non-standard mix basis (e.g. mass_ratio, volume_fraction).")
+            ambiguous_fractions = [
+                r for r in valid_recs
+                if getattr(r, "mix_basis", "") == "dry_mass_fraction" and getattr(r, "fly_ash_fraction", None) is not None and getattr(r, "fly_ash_fraction") > 1.0
+            ]
+            if ambiguous_fractions:
+                unit_basis_issues.append(f"{len(ambiguous_fractions)} record(s) have constituent fractions > 1.0 under dry_mass_fraction basis.")
+
+            # Duplicate and grouping concentration warnings
+            duplicate_grouping_warnings: List[str] = []
+            if distinct_papers_n > 0:
+                paper_counts = Counter(r.paper_id for r in valid_recs if r.paper_id)
+                top_paper, top_count = paper_counts.most_common(1)[0]
+                if sample_count > 0 and (top_count / sample_count >= 0.70) and distinct_papers_n > 1:
+                    duplicate_grouping_warnings.append(
+                        f"Paper concentration: {top_count}/{sample_count} ({round(top_count/sample_count*100)}%) records originate from a single publication ('{top_paper}')."
+                    )
+
             readiness_dict[target_prop] = TargetReadinessReport(
                 target_property=target_prop,
                 readiness_status=readiness_status,
@@ -716,6 +761,10 @@ class EDAService:
                 recommended_split_strategy=split_strategy,
                 justification=justification,
                 limitations=limitations,
+                unmet_readiness_criteria=unmet_criteria,
+                next_corrective_action=next_action,
+                unit_and_basis_issues=unit_basis_issues,
+                duplicate_and_grouping_warnings=duplicate_grouping_warnings,
             )
 
         return readiness_dict, general_limitations

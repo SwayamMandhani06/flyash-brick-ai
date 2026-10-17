@@ -1,17 +1,87 @@
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile, status
 from sqlalchemy.orm import Session
 from backend.app.persistence.database import get_db
 from backend.app.persistence.models import ExperimentalRecord
 from backend.app.persistence.repositories import PaperRepository, RecordRepository
+from backend.app.schemas.csv_import import CSVImportResponse
 from backend.app.schemas.record import (
     RecordCreate,
     RecordResponse,
     RecordReviewAction,
     ReviewHistoryResponse,
 )
+from backend.app.services.csv_importer import generate_sample_csv_template, import_curated_csv
 
 router = APIRouter(prefix="/records", tags=["Experimental Records"])
+
+
+@router.get(
+    "/csv-template",
+    summary="Download standard researcher data curation CSV template",
+    response_class=Response,
+)
+def download_csv_template() -> Response:
+    """Provides a documented CSV template with column headers and illustrative placeholders."""
+    template_str = generate_sample_csv_template()
+    return Response(
+        content=template_str,
+        media_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="flyash_curation_template.csv"'},
+    )
+
+
+@router.post(
+    "/import-csv",
+    response_model=CSVImportResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Import researcher-curated experimental CSV dataset",
+)
+async def import_csv_dataset(
+    file: UploadFile = File(..., description="Researcher-curated CSV data file"),
+    curator_name: str = Form(..., description="Name or identifier of the researcher responsible for curation"),
+    paper_id: Optional[str] = Form(None, description="Optional default paper_id for rows omitting publication link"),
+    source_page: Optional[str] = Form(None, description="Optional default source page for rows omitting citation page"),
+    source_table: Optional[str] = Form(None, description="Optional default source table for rows omitting table/figure"),
+    db: Session = Depends(get_db),
+) -> CSVImportResponse:
+    """Ingests researcher-curated CSV records with provenance, duplicate checks, and row diagnostics."""
+    filename = file.filename or "unknown.csv"
+    if not filename.lower().endswith(".csv"):
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="UNSUPPORTED_FILE_TYPE: Only CSV (.csv) files are supported for tabular curation import.",
+        )
+
+    try:
+        content = await file.read()
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"READ_ERROR: Could not read uploaded CSV file content: {e}",
+        )
+
+    if paper_id:
+        paper = PaperRepository.get_by_id(db, paper_id)
+        if not paper:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Referenced paper '{paper_id}' is not registered in the system. Register the paper first.",
+            )
+
+    try:
+        res = import_curated_csv(
+            db=db,
+            file_content=content,
+            curator_name=curator_name,
+            filename=filename,
+            fallback_paper_id=paper_id,
+            fallback_source_page=source_page,
+            fallback_source_table=source_table,
+        )
+        return res
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
 @router.post("", response_model=RecordResponse, status_code=status.HTTP_201_CREATED, summary="Create a candidate record")

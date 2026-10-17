@@ -72,6 +72,10 @@ class TargetReadinessReport(BaseModel):
     recommended_split_strategy: str
     justification: str
     limitations: List[str]
+    unmet_readiness_criteria: List[str] = Field(default_factory=list, description="Explicit project criteria preventing model readiness")
+    next_corrective_action: str = Field("", description="Actionable next step for researchers to reach empirical readiness")
+    unit_and_basis_issues: List[str] = Field(default_factory=list, description="Unit or mix-basis issues detected in target records")
+    duplicate_and_grouping_warnings: List[str] = Field(default_factory=list, description="Duplicate or related experiment clustering warnings")
 
 
 class AnalysisRunCreate(BaseModel):

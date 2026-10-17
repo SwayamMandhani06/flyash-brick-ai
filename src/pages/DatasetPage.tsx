@@ -4,6 +4,7 @@ import { MOCK_FLY_ASH_DATASET } from '../data/mockDataset';
 import type { FlyAshMixRecord } from '../types/dataset';
 import { RecordDetailModal } from '../components/dataset/RecordDetailModal';
 import { ScatterPlotVisualizer } from '../components/dataset/ScatterPlotVisualizer';
+import { ResearcherCurationPanel } from '../components/dataset/ResearcherCurationPanel';
 import { Download, Search, Eye, ArrowUpDown, Table, Activity } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { EmptyState } from '../components/common/EmptyState';
@@ -128,6 +129,9 @@ export const DatasetPage: React.FC = () => {
         </div>
       }
     >
+      {/* Researcher Literature Curation & Fail-Closed Readiness Workstation */}
+      <ResearcherCurationPanel />
+
       {/* Schema Attributes Summary Cards */}
       <div
         style={{

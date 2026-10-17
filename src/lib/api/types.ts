@@ -246,3 +246,57 @@ export interface ExplainResponse {
   method: string; // "KernelSHAP / TreeSHAP"
   isDemoExplanation: boolean;
 }
+
+// ==========================================
+// 07. Curation CSV Import & Readiness Contracts
+// ==========================================
+export interface CSVImportRowResult {
+  row_number: number;
+  record_id?: string;
+  paper_id?: string;
+  status: 'created' | 'warning' | 'error' | 'skipped';
+  errors: string[];
+  warnings: string[];
+  duplicate_suspect: boolean;
+  matched_existing_record_id?: string;
+}
+
+export interface CSVImportResponse {
+  curator_name: string;
+  filename: string;
+  total_rows_processed: number;
+  imported_records_count: number;
+  rows_with_warnings_count: number;
+  rows_failed_count: number;
+  created_record_ids: string[];
+  row_results: CSVImportRowResult[];
+  summary: string;
+}
+
+export interface LiveTargetReadinessReport {
+  target_property: string;
+  readiness_status: 'ready_for_evaluation' | 'preliminary_limited_evidence' | 'unsupported_insufficient_data';
+  eligible_sample_count: number;
+  distinct_paper_count: number;
+  distinct_experiment_group_count: number;
+  missing_target_count: number;
+  material_system_counts: Record<string, number>;
+  feature_missingness_summary: Record<string, number>;
+  grouped_evaluation_feasible: boolean;
+  recommended_split_strategy: string;
+  justification: string;
+  limitations: string[];
+  unmet_readiness_criteria: string[];
+  next_corrective_action: string;
+  unit_and_basis_issues: string[];
+  duplicate_and_grouping_warnings: string[];
+}
+
+export interface LiveReadinessOverviewResponse {
+  analysis_id?: string;
+  dataset_version_id?: string;
+  compressive_strength: LiveTargetReadinessReport;
+  water_absorption: LiveTargetReadinessReport;
+  general_limitations: string[];
+  evaluated_at: string;
+}

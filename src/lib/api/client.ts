@@ -75,6 +75,33 @@ class ApiClient {
 
     return response.json();
   }
+
+  public async postFormData<TRes>(endpoint: string, formData: FormData): Promise<TRes> {
+    const url = `${this.baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      let errMsg = `API POST request failed with status ${response.status}: ${response.statusText}`;
+      try {
+        const parsed = JSON.parse(errText);
+        if (parsed.detail) errMsg = parsed.detail;
+        else if (parsed.error && parsed.error.message) errMsg = parsed.error.message;
+      } catch {
+        // Keep fallback
+      }
+      throw new Error(errMsg);
+    }
+
+    return response.json();
+  }
 }
 
 export const apiClient = new ApiClient(apiClientConfig.baseUrl);

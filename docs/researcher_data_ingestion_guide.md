@@ -200,7 +200,36 @@ GET /api/datasets/readiness?dataset_version_id=v1.0.0-fal-g-cohort
 
 ---
 
-## 4. Phase 6 Readiness Gate Criteria
+### Step 3B: Batch CSV Curation & Literature Ingestion (Phase 10)
+
+For literature papers with extensive tabular matrices, researchers can curate and import mix batches directly using standard civil engineering CSV templates:
+
+1. **Download Documented Ingestion Template:**
+   ```http
+   GET /api/records/csv-template
+   ```
+   Returns `flyash_curation_template.csv` containing protocol comments, canonical column headers, and an illustrative non-empirical example.
+
+2. **Ingest Curated CSV Batch:**
+   ```http
+   POST /api/records/import-csv
+   Content-Type: multipart/form-data
+
+   file: <curated_mixes.csv>
+   curator_name: "Dr. S. Sharma"
+   paper_id: "paper_a1b2c3d4e5f6"
+   source_page: "6"
+   source_table: "Table 4"
+   ```
+   **Ingestion Safeguards Enforced:**
+   - **Audit Attribution:** `curator_name` is mandatory and recorded in each record's review history.
+   - **Needs Review Default:** All imported rows enter the database in `needs_review` review status. They are **never** auto-accepted.
+   - **Null Preservation:** Missing constituents and unmeasured properties remain `null`. Never zero-filled.
+   - **Duplicate Detection:** Non-destructive duplicate checks flag identical formulations within the same paper as `duplicate_suspect`, preserving records for human review.
+
+---
+
+## 4. Phase 6 Readiness Gate Criteria & Actionable Diagnostics
 
 Before XGBoost modeling is permitted for any target, the frozen snapshot must satisfy the project-defined operational gates (`PLAN.md` Section 12):
 
@@ -210,6 +239,14 @@ Before XGBoost modeling is permitted for any target, the frozen snapshot must sa
 | **Accepted Records** | $\ge 15$ records | $\ge 30$ records | Protects gradient boosted decision trees from extreme variance & small-sample memorization |
 | **Feature Missingness** | $< 60\%$ on core binders | $< 20\%$ on core binders | Prevents models from depending heavily on arbitrary imputation |
 | **Readiness Status** | `preliminary_limited_evidence` | `ready_for_evaluation` | Explicit status required before Phase 6 script execution |
+
+### Actionable Readiness Reporting (Phase 10)
+
+The live readiness endpoint (`GET /api/datasets/readiness`) provides actionable diagnostic fields for both compressive strength and water absorption:
+- `unmet_readiness_criteria`: Explicit enumeration of failed thresholds (e.g., `"Requires at least 15 accepted empirical records (current: 0)"`).
+- `next_corrective_action`: Prescriptive guidance indicating exactly what experimental evidence must be curated next before model training can be activated.
+- `unit_and_basis_issues`: Flags ambiguous units or unverified mix bases.
+- `duplicate_and_grouping_warnings`: Flags potential literature duplicates or single-paper dominance.
 
 > [!CAUTION]
 > **Current Status Notice:**  

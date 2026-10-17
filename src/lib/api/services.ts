@@ -6,7 +6,7 @@
  * and seamless transition to real Python endpoints (FastAPI/Flask) via apiClient.
  */
 
-import { apiClient } from './client';
+import { apiClient, apiClientConfig } from './client';
 import type {
   ExtractRequest,
   ExtractResponse,
@@ -22,6 +22,8 @@ import type {
   LiveOptimizationResponse,
   ExplainRequest,
   ExplainResponse,
+  CSVImportResponse,
+  LiveReadinessOverviewResponse,
 } from './types';
 
 import { DEMO_RESEARCH_PAPERS } from '../../data/demo/papers';
@@ -341,5 +343,46 @@ export const explainabilityService = {
       method: 'TreeSHAP Attribution (Demo Surrogate)',
       isDemoExplanation: true,
     };
+  },
+};
+
+// ============================================================================
+// 7. Curation & Dataset Readiness Service
+// ============================================================================
+export const curationService = {
+  async downloadCSVTemplate(): Promise<string> {
+    const response = await fetch(`${apiClientConfig.baseUrl}/api/records/csv-template`);
+    if (!response.ok) {
+      throw new Error(`Failed to download template: ${response.statusText}`);
+    }
+    return response.text();
+  },
+
+  async importCuratedCSV(
+    file: File,
+    curatorName: string,
+    paperId?: string,
+    sourcePage?: string,
+    sourceTable?: string
+  ): Promise<CSVImportResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('curator_name', curatorName);
+    if (paperId) {
+      formData.append('paper_id', paperId);
+    }
+    if (sourcePage) {
+      formData.append('source_page', sourcePage);
+    }
+    if (sourceTable) {
+      formData.append('source_table', sourceTable);
+    }
+    return apiClient.postFormData<CSVImportResponse>('/api/records/import-csv', formData);
+  },
+
+  async getLiveReadinessOverview(datasetVersionId?: string): Promise<LiveReadinessOverviewResponse> {
+    return apiClient.get<LiveReadinessOverviewResponse>('/api/datasets/readiness', {
+      dataset_version_id: datasetVersionId,
+    });
   },
 };
