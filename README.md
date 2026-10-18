@@ -98,7 +98,8 @@ flowchart TD
 | **Phase 4** | Scientific data validation, unit conversion registry, dry mass balance, water/binder verification, validation run persistence, target-specific eligibility | **Completed** | Evidence-aware constraint checks without zero-fabrication |
 | **Phase 5** | Data readiness profiling snapshot, target comparability gates, exploratory analysis | **Completed** | Commit 8899073; feature suitability, leakage prevention, target-specific readiness gates |
 | **Phase 10** | Research data curation, dataset readiness, and empirical modeling activation | **Completed** | Commit 714937f; CSV curation template, batch literature ingestion with researcher attribution, duplicate detection, and live actionable readiness diagnostics |
-| **Phase 11** | Empirical data activation, model readiness validation, deployment & reproducibility | **Implemented** | Comprehensive deployment runbook (`docs/deployment.md`), CLI smoke check script (`scripts/deployment_smoke_check.py`), automated test suite (137 tests), and fail-closed readiness gates |
+| **Phase 11** | Empirical data activation, model readiness validation, deployment & reproducibility | **Completed** | Commit b48672a; deployment runbook (`docs/deployment.md`), CLI smoke check script (`scripts/deployment_smoke_check.py`), automated test suite (137 tests), and fail-closed readiness gates |
+| **Phase 12** | Documentation, research paper, competition, IPR, and handover | **Implemented** | Comprehensive technical documentation suite (`docs/`), working research manuscript draft, journal submission tracking, competition package, and IPR assessment |
 
 
 ---
@@ -265,7 +266,19 @@ Run the complete backend test suite:
 - **137 automated tests** cover configuration, CORS, error handling, database persistence, foreign keys, transactions, paper registry, review history, dataset snapshots, synthetic data isolation, PDF upload validation, `pdfplumber` extraction, scientific validation, unit conversion registry, dry mass balance, water/binder verification, target-specific model readiness, exploratory data analysis, feature suitability, collinearity detection, leakage prevention, the end-to-end research ingestion workflow, XGBoost paper-grouped cross-validation, reference mean baseline comparison, feature manifest leakage quarantine, surrogate inference error handling, bounded candidate search, dry mass balance enforcement, multi-objective Pareto ranking, optimization readiness gating, batch CSV curation, template placeholder rejection, live actionable readiness diagnostics, deployment health/readiness contracts, persistence idempotency, and fail-closed readiness gates.
 - All tests execute deterministically against isolated temporary SQLite databases and synthetic in-memory PDFs without requiring external network connectivity.
 
-For empirical data entry and review procedures, consult the **[Researcher Data Ingestion Guide](docs/researcher_data_ingestion_guide.md)**. For production deployment, persistence guarantees, backup procedures, and smoke testing, consult the **[Deployment & Reproducibility Guide](docs/deployment.md)**.
+### Technical Documentation & Research Deliverables
+- **Architecture & Specifications:** [docs/architecture.md](docs/architecture.md)
+- **Canonical Data Dictionary (`v1.0.0-canonical`):** [docs/data_dictionary.md](docs/data_dictionary.md)
+- **API Contract & Route Reference:** [docs/api_contract.md](docs/api_contract.md)
+- **Model Card (Dual-Target XGBoost):** [docs/model_card.md](docs/model_card.md)
+- **Optimization Methodology:** [docs/optimization_methodology.md](docs/optimization_methodology.md)
+- **Deployment & Reproducibility Guide:** [docs/deployment.md](docs/deployment.md)
+- **Researcher Data Ingestion Guide:** [docs/researcher_data_ingestion_guide.md](docs/researcher_data_ingestion_guide.md)
+- **Project Handover & Activation Runbook:** [docs/handover.md](docs/handover.md)
+- **Research Manuscript Draft:** [research/manuscript/draft_manuscript.md](research/manuscript/draft_manuscript.md)
+- **Journal Submission & Venue Tracking:** [research/submission_tracking.md](research/submission_tracking.md)
+- **Competition & Exhibition Package:** [research/competition_tracking.md](research/competition_tracking.md)
+- **Intellectual Property Rights (IPR) Assessment:** [research/ipr_assessment.md](research/ipr_assessment.md)
 
 Run the automated deployment smoke check utility:
 ```powershell
@@ -287,8 +300,8 @@ npm run build
 2. **Bureau of Indian Standards**. *IS 3812 (Part 1):2013 — Pulverized Fuel Ash — Specification for Use as Pozzolana in Cement, Cement Mortar and Concrete*.
 3. **Bureau of Indian Standards**. *IS 3495 (Parts 1 to 4):2019 — Methods of Tests of Burnt Clay Building Bricks*.
 4. **ASTM International**. *ASTM C618 — Standard Specification for Coal Fly Ash and Raw or Calcined Natural Pozzolan for Use in Concrete*.
-5. **Kumar, S., & Prasad, J.** (2021). *Experimental Investigation on Pozzolanic Reactivity of Class F Fly Ash-Lime-Gypsum Bricks*. Construction and Building Materials.
-6. **Turgut, P., & Algin, H. M.** (2020). *Steam-Cured Fly Ash-Quarry Dust Bricks for High-Strength Masonry Units*. ASCE Journal of Materials in Civil Engineering.
+5. **Kumar, S.** (2002). *A perspective study on fly ash–lime–gypsum bricks and hollow blocks for low cost housing development*. Construction and Building Materials, 16(8), 519–525. DOI: 10.1016/S0950-0618(02)00034-X.
+6. **Turgut, P., & Algin, H. M.** (2007). *Limestone dust and wood sawdust as brick material*. Building and Environment, 42(9), 3399–3403. DOI: 10.1016/j.buildenv.2006.08.012.
 
 ---
 
@@ -313,5 +326,5 @@ This project is developed as an academic major project in the **Department of Co
 
 The source code of this software platform is released under the [MIT License](LICENSE).
 
-> **Important Notice on Research Material & Literature**:  
+> **Important Notice on Research Material & Literature**:
 > The MIT License applies exclusively to the platform source code in this repository. Academic research papers, publishers' copyrighted articles, citation abstracts, and literature-derived benchmark records remain the intellectual property of their respective authors and publishers.

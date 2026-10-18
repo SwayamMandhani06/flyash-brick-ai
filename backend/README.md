@@ -318,8 +318,14 @@ Run the automated deployment smoke check utility:
 
 ## 14. Operational Documentation & Guides
 
-- **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, batch CSV ingestion protocol, and Phase 6/10 operational readiness criteria.
+- **[Architecture & Specifications](../docs/architecture.md)**: Two-tier topology, FastAPI analytical engine, and fail-closed gates.
+- **[Canonical Data Dictionary (`v1.0.0-canonical`)](../docs/data_dictionary.md)**: Field definitions, canonical units, review states, and null semantics.
+- **[API Contract & Route Reference](../docs/api_contract.md)**: Complete REST route specifications, request/response models, and error envelopes.
+- **[Model Card](../docs/model_card.md)**: XGBoost regressor specifications, feature manifest, leakage quarantine, and TreeSHAP boundaries.
+- **[Optimization Methodology](../docs/optimization_methodology.md)**: Bounded candidate search, material system boundaries, mass balance, and Pareto ranking.
 - **[Deployment & Reproducibility Guide](../docs/deployment.md)**: Deployment targets, configuration, persistence guarantees, live backup/restore runbook, smoke check execution, and fail-closed scientific gate behaviors.
+- **[Researcher Data Ingestion Guide](../docs/researcher_data_ingestion_guide.md)**: Full API procedures, required/optional fields for each prediction target, dry mass balance tolerances, curation checklist, batch CSV ingestion protocol, and Phase 6/10 operational readiness criteria.
+- **[Project Handover & Activation Runbook](../docs/handover.md)**: Developer setup, routine verification commands, and step-by-step empirical activation protocol.
 
 ---
 
@@ -335,4 +341,5 @@ Run the automated deployment smoke check utility:
 - **Phase 8 (Completed):** Constrained formulation optimization, multi-objective Pareto ranking, dry mass balance enforcement, and recommendation contracts. Empirical optimization blocked on empty local database (`OPTIMIZATION_UNAVAILABLE`) (Commit `6852572`).
 - **Phase 9 (Completed):** End-to-end integration hardening, safe model loading with mock fallback isolation, and scientific safeguards across literature ingestion, XGBoost modeling, and constrained optimization (Commit `8f102b5`).
 - **Phase 10 (Completed):** Research Data Curation, Dataset Readiness, and Empirical Modeling Activation (Commit `714937f`). Features documented CSV curation template generation, batch CSV literature ingestion with mandatory researcher attribution, provenance citation tracking, null preservation, non-destructive duplicate detection, and live actionable readiness diagnostics.
-- **Phase 11 (Implemented):** Empirical Data Activation, Model Readiness Validation, Deployment & Reproducibility. Comprehensive deployment runbook (`docs/deployment.md`), CLI smoke check runner (`scripts/deployment_smoke_check.py`), automated deployment test suite (`backend/tests/test_deployment_and_smoke.py`), verified live empirical database state (0 papers, 0 accepted records), and fail-closed security gates.
+- **Phase 11 (Completed):** Empirical Data Activation, Model Readiness Validation, Deployment & Reproducibility (Commit `b48672a`). Comprehensive deployment runbook (`docs/deployment.md`), CLI smoke check runner (`scripts/deployment_smoke_check.py`), automated deployment test suite (`backend/tests/test_deployment_and_smoke.py`), verified live empirical database state (0 papers, 0 accepted records), and fail-closed security gates.
+- **Phase 12 (Implemented):** Documentation, Research Paper, Competition, IPR, and Handover. Complete technical documentation suite (`docs/`), formal research manuscript draft (`research/manuscript/draft_manuscript.md`), journal submission tracking, competition package, and IPR assessment.
